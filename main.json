@@ -1,0 +1,13 @@
+{
+  "id": "FunMode",
+  "name": "Fun Mode",
+  "display_name": "Fun Mode",
+  "author": ["RandomsongV2"],
+  "description": "Have fun!",
+  "prefix": "funmode",
+  "main_file": "main.lua",
+  "priority": 0,
+  "badge_colour": "4f6367",
+  "version": "0.1",
+  "dependencies": []
+}
