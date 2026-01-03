@@ -1,5 +1,4 @@
 assert(SMODS.load_file("code/sounds.lua"))()
 assert(SMODS.load_file("code/jokers.lua"))()
 assert(SMODS.load_file("code/fun_cards.lua"))()
-assert(SMODS.load_file("code/editions.lua"))()
 assert(SMODS.load_file("code/blinds.lua"))()
