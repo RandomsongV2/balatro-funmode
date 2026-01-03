@@ -217,21 +217,18 @@ SMODS.Joker{
     pos = {x = 0, y = 0},
     pixel_size = {w = 42, h = 65},
     calculate = function(self, card, context)
-            if context.end_of_round or context.setting_blind or context.joker_main then
-                G.E_MANAGER:add_event(Event({
-                    trigger = 'after',
-                    delay = 0.3,
-                    blockable = false,
-                    func = function()
-                        G.jokers:remove_card(card)
-                        card:remove()
-                        card = nil
-                        return true
-                    end
-                }))
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after',
+            delay = 0.3,
+            blockable = false,
+            func = function()
+                G.jokers:remove_card(card)
+                card:remove()
+                card = nil
                 return true
-                end
             end
+        }))
+        end
 }
 
 --todo
@@ -445,7 +442,7 @@ SMODS.Joker{
         text = {
             'Gains {X:mult,C:white}X0.5{} mult for each Twin',
             'can appear multiple times',
-            '(currently {X:mult,C:white} X#1# {} mult)'
+            '{C:inactive}(currently {}{X:mult,C:white}X#1#{}{C:inactive} mult){}'
         },
     },
     atlas ='twin',
@@ -459,26 +456,29 @@ SMODS.Joker{
     allow_duplicates = true,
     pos = {x = 0, y = 0},
     config = {extra = {x_mult = 1, sprite = 0, mult_scaling = 0.5}},
-    --pseudorandom('twinsprite') <= 0.5 then return 0 else return 1
+    loc_vars = function(self, info_queue, card)
+        --info_queue[#info_queue + 1] = G.P_CENTERS.j_funmode_j_twin --crashes the game
+        return {vars = {math.max(#SMODS.find_card("j_funmode_j_twin", true) * 0.5 + 0.5, 1)} }
+        end,
     calculate = function(self, card, context)
-        if G.STAGE == G.STAGES.RUN then
-            for i = 1, #G.jokers.cards do
-                if G.jokers.cards[i].ability.name == 'twin' and G.jokers.cards[i] ~= self then self.ability.extra.x_mult = self.ability.extra.x_mult + 0.5
-                end
+        if card.ability.hands_played_at_create == G.GAME.hands_played then
+            card.ability.hands_played_at_create = card.ability.cards_played_at_create - 1
+            card.ability.extra.sprite = math.min(1, math.floor(pseudorandom('twinsprite') * 2))
+            card.children.center:set_sprite_pos({x = card.ability.extra.sprite, y = 0})
+            end
+        if context.joker_main then
+                return {
+                xmult = #SMODS.find_card("j_funmode_j_twin", true) * 0.5 + 0.5
+                }
             end
         end
-    end,
-    loc_vars = function(self, info_queue, center)
-        info_queue[#info_queue + 1] = G.P_CENTERS.j_twin
-        return {vars = {center.ability.extra.x_mult}}
-    end
 }
 
 SMODS.Atlas{
     key = 'YTTL',
-    path = 'Placeholder.png',
-    px = 71,
-    py = 95
+    path = 'yttl.png',
+    px = 206,
+    py = 168
 }
 SMODS.Joker{
     key = 'j_YTTL',
@@ -499,6 +499,7 @@ SMODS.Joker{
     eternal_compat = true,
     perishable_compat = true,
     pos = {x = 0, y = 0},
+    display_size = {w = 103, h = 84},
     config = {extra = {payout = 1, scaling = 1, allowed = true}},
     loc_vars = function(self, info_queue, center)
         return {vars = {center.ability.extra.payout, center.ability.extra.scaling}}
@@ -518,22 +519,22 @@ SMODS.Joker{
 }
 
 SMODS.Atlas{
-    key = 'v1',
-    path = 'Placeholder.png',
+    key = 'feedbacker',
+    path = 'feedbacker.png',
     px = 71,
     py = 95
 }
 SMODS.Joker{
-    key = 'j_v1',
+    key = 'feedbacker',
     loc_txt = {
-        name = 'V1',
+        name = 'Feedbacker',
         text = {
             'when hand played',
             'destroy middle card',
             '{V:1}Clubs{} excluded',
         },
     },
-    atlas ='v1',
+    atlas ='feedbacker',
     rarity = 3,
     cost = 8,
     unlocked = true,
@@ -546,10 +547,20 @@ SMODS.Joker{
         return {vars = {colours = {HEX('008ee6')}}}
         end,
     calculate = function(self, card, context)
-        if context.destroy_card then
-            local mid = (#context.cardarea - ((#context.cardarea + 1) % 2)) / 2
-            --local card = context.cardarea[mid]
-            return {remove = true} --and context.destroy_card == card}
+        if context.destroy_card and context.cardarea == G.play and G.play.cards ~= nil then
+            cards_played = #G.play.cards
+            local mid = (cards_played - (cards_played % 2)) / 2 + cards_played % 2
+            local selected = G.play.cards[mid]
+            if not selected:is_suit("Clubs") then
+                selected:start_dissolve({HEX("57ecab")}, nil, 1.6)
+                play_sound('funmode_parry', 0.96 + math.random() * 0.08, 0.25)
+            elseif cards_played % 2 == 0 then
+                selected = G.play.cards[mid + 1]
+                if not selected:is_suit("Clubs") then
+                    selected:start_dissolve({HEX("57ecab")}, nil, 1.6)
+                    play_sound('funmode_parry', 0.96 + math.random() * 0.08, 0.25)
+                    end
+                end
             end
         end
 }
@@ -592,4 +603,96 @@ SMODS.Joker{
             G.SETTINGS.GAMESPEED = 0.5
             end
         end
+}
+
+SMODS.Atlas{
+    key = 'minos',
+    path = 'minos.png',
+    px = 71,
+    py = 95
+}
+SMODS.Joker{
+    key = 'minos',
+    loc_txt = {
+        name = 'Minos',
+        text = {
+            'after being destroyed',
+            'create {C:attention}Minos Prime{}'
+            }
+        },
+    loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = G.P_CENTERS.j_funmode_minos_prime
+        return {}
+        end,
+    atlas = 'minos',
+    rarity = 3,
+    cost = 8,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = false,
+    eternal_compat = false,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    calculate = function(self, card, context)
+        if context.joker_type_destroyed and context.card == card then
+            SMODS.add_card({key = 'j_funmode_minos_prime'})
+            end
+        end
+}
+
+SMODS.Atlas{
+    key = 'minos_prime',
+    path = 'minos_prime.png',
+    px = 316,
+    py = 1022
+}
+SMODS.Joker{
+    key = 'minos_prime',
+    loc_txt = {
+        name = 'Minos Prime',
+        text = {
+            'gains {X:mult,C:white}X#2#{} Mult when',
+            '{C:tarot}judgement{} is used',
+            '{C:inactive}(Currently {}{X:mult,C:white}X#1#{}{C:inactive}){}'
+            }
+        },
+    config = {extra = {xmult = 1, scaling = 1}},
+    loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = G.P_CENTERS.c_judgement
+        return {vars = {center.ability.extra.xmult, center.ability.extra.scaling}}
+        end,
+    atlas = 'minos_prime',
+    rarity = 4,
+    cost = 20,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = false,
+    eternal_compat = false,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    display_size = {w = 316/10, h = 1022/10},
+    in_pool = function(self, args)
+        return false
+        end,
+    calculate = function(self, card, context)
+        if context.using_consumeable and context.consumeable.config.center_key == 'c_judgement' then
+            card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.scaling
+            G.E_MANAGER:add_event(Event({
+                trigger = 'immediate',
+                blockable = false,
+                func = function()
+                    if pseudorandom('minos_prime_judgement') < 0.5 then
+                        play_sound('funmode_judgement', 0.96 + math.random() * 0.08, 0.25)
+                    else
+                        play_sound('funmode_judgement2', 0.96 + math.random() * 0.08, 0.25)
+                        end
+                    return true
+                    end
+                }))
+            return {message = localize {type = 'variable', key = 'a_xmult', vars = {card.ability.extra.xmult}}}
+            end
+        if context.joker_main then
+            return {xmult = card.ability.extra.xmult}
+            end
+    end
 }
