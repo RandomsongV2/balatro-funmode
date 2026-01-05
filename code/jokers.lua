@@ -247,7 +247,7 @@ SMODS.Joker{
             'until end of a round',
             'cant create same joker twice',
             'cant create legendary',
-            '{C:inactive}doesnt work{}'
+            '{C:inactive}does not work{}'
         },
     },
     atlas ='Manfred_von_karma',
@@ -334,7 +334,7 @@ SMODS.Atlas{
     px = 71,
     py = 95
 }
-SMODS.Joker{
+SMODS.Joker{ --really cool joker
     key = 'DOG',
     loc_txt = {
         name = 'The Devouver Of Gods',
@@ -342,7 +342,7 @@ SMODS.Joker{
             'when {C:attention}Blind{} is selected',
             '{C:red,E:2}destroy{} all jokers and gain',
             'their {C:chips}chips{}, {C:mult}mult{} and {X:mult,C:white}xmult{}',
-            '{C:inactive}(currently {} {C:chips}+#1#{} {C:inactive} / {} {C:mult}+#2#{} {C:inactive} / {} {X:mult,C:white}X#3#{} {C:inactive}){}',
+            '{C:inactive}(currently {}{C:chips}+#1#{}{C:inactive} / {}{C:mult}+#2#{}{C:inactive} / {}{X:mult,C:white}X#3#{}{C:inactive}){}',
         },
     },
     atlas ='DOG',
@@ -436,7 +436,7 @@ SMODS.Atlas{
     py = 95
 }
 SMODS.Joker{
-    key = 'j_twin',
+    key = 'twin',
     loc_txt = {
         name = 'Twin',
         text = {
@@ -455,21 +455,23 @@ SMODS.Joker{
     perishable_compat = true,
     allow_duplicates = true,
     pos = {x = 0, y = 0},
-    config = {extra = {x_mult = 1, sprite = 0, mult_scaling = 0.5}},
+    config = {extra = {x_mult = 1, sprite = -1, mult_scaling = 0.5}},
     loc_vars = function(self, info_queue, card)
-        --info_queue[#info_queue + 1] = G.P_CENTERS.j_funmode_j_twin --crashes the game
-        return {vars = {math.max(#SMODS.find_card("j_funmode_j_twin", true) * 0.5 + 0.5, 1)} }
+        --info_queue[#info_queue + 1] = G.P_CENTERS.j_funmode_twin --crashes the game, potential todo?
+        return {vars = {math.max(#SMODS.find_card("j_funmode_twin", true) * 0.5 + 0.5, 1)} }
         end,
     calculate = function(self, card, context)
-        if card.ability.hands_played_at_create == G.GAME.hands_played then
-            card.ability.hands_played_at_create = card.ability.cards_played_at_create - 1
+        if card.ability.extra.sprite == -1 then --todo: fix texture select if possible
             card.ability.extra.sprite = math.min(1, math.floor(pseudorandom('twinsprite') * 2))
             card.children.center:set_sprite_pos({x = card.ability.extra.sprite, y = 0})
             end
         if context.joker_main then
                 return {
-                xmult = #SMODS.find_card("j_funmode_j_twin", true) * 0.5 + 0.5
+                xmult = #SMODS.find_card("j_funmode_twin", true) * 0.5 + 0.5
                 }
+            end
+        if context.reroll_shop or context.starting_shop or context.ending_shop or context.setting_blind or context.end_of_round then
+            card.children.center:set_sprite_pos({x = card.ability.extra.sprite, y = 0})
             end
         end
 }
@@ -509,6 +511,10 @@ SMODS.Joker{
             card.ability.extra.allowed = true
             end
         if context.end_of_round and G.GAME.current_round.hands_left == 0 and G.GAME.current_round.discards_left == 0 and card.ability.extra.allowed then
+            --todo add message 'YOUR TAKING TO LONG' with laugh
+            play_sound('funmode_yttl', 0.96 + math.random() * 0.08, 0.5)
+            --todo: implement \/
+            --play_sound('funmode_pumkin_laugh', 0.96 + math.random() * 0.08, 0.25)
             card.ability.extra.allowed = false
             card.ability.extra.payout = card.ability.extra.payout + card.ability.extra.scaling
             end
@@ -617,7 +623,7 @@ SMODS.Joker{
         name = 'Minos',
         text = {
             'after being destroyed',
-            'create {C:attention}Minos Prime{}'
+            'creates {C:attention}Minos Prime{}'
             }
         },
     loc_vars = function(self, info_queue, center)
@@ -667,7 +673,7 @@ SMODS.Joker{
     unlocked = true,
     discovered = true,
     blueprint_compat = false,
-    eternal_compat = false,
+    eternal_compat = true,
     perishable_compat = true,
     pos = {x = 0, y = 0},
     display_size = {w = 316/10, h = 1022/10},
@@ -695,4 +701,124 @@ SMODS.Joker{
             return {xmult = card.ability.extra.xmult}
             end
     end
+}
+
+SMODS.Atlas{
+    key = 'burning',
+    path = 'burning.png',
+    px = 71,
+    py = 95
+}
+SMODS.Joker{
+    key = 'burning_joker',
+    loc_txt = {
+        name = 'Burning Joker',
+        text = {
+            'gains {X:mult,C:white}X#2#{} mult',
+            'when discarding',
+            'most played hand',
+            '{C:inactive}(Currently {}{X:mult,C:white}X#1#{}{C:inactive}){}'
+            }
+        },
+    config = {extra = {xmult = 1.0, scaling = 0.1}},
+    loc_vars = function(self, info_queue, center)
+        return {vars = {center.ability.extra.xmult, center.ability.extra.scaling}}
+        end,
+    atlas = 'burning',
+    rarity = 3,
+    cost = 8,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = false,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    calculate = function(self, card, context)
+        if context.pre_discard and not context.hook then
+            local hand_discarded, _ = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
+            local increase = true
+            local play_more_than = (G.GAME.hands[hand_discarded].played or 0)
+            for k, v in pairs(G.GAME.hands) do
+                if k ~= hand_discarded and v.played >= play_more_than and v.visible then
+                    increase = false
+                    break
+                    end
+                end
+            if increase then
+                card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.scaling
+                return {
+                    message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.xmult}}
+                }
+                end
+            end
+        end
+}
+
+SMODS.Atlas{
+    key = 'b_market',
+    path = 'placeholder.png',
+    px = 71,
+    py = 95
+}
+SMODS.Joker{
+    key = 'black_market',
+    loc_txt = {
+        name = 'Black Market',
+        text = {
+            'debuffs joker to the right',
+            'debuffs joker to the left',
+            'at end of round gain {C:money}$#1#{}',
+            'for each debuffed joker',
+            }
+        },
+    config = {extra = {payout = 3}},
+    loc_vars = function(self, info_queue, center)
+        return {vars = {center.ability.extra.payout}}
+        end,
+    atlas = 'b_market',
+    rarity = 2,
+    cost = 7,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = false,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    calculate = function(self, card, context)
+        if (context.card_added or context.selling_card or context.joker_type_destroyed or context.card_released) and not context.blueprint then
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] and G.jokers.cards[i].config.center_key == 'j_funmode_black_market' and not G.jokers.cards[i].debuff then
+                    if i and G.jokers.cards[i + 1] then
+                        SMODS.debuff_card(G.jokers.cards[i + 1], true, 'funmode_joker_black_market')
+                        SMODS.recalc_debuff(G.jokers.cards[i + 1])
+                        end
+                    if i and G.jokers.cards[i - 1] then
+                        SMODS.debuff_card(G.jokers.cards[i - 1], true, 'funmode_joker_black_market')
+                        SMODS.recalc_debuff(G.jokers.cards[i - 1])
+                        end
+                    end
+                if (not G.jokers.cards[i + 1] or G.jokers.cards[i + 1].config.center_key ~= 'j_funmode_black_market' or G.jokers.cards[i + 1].debuff) and
+                    (not G.jokers.cards[i - 1] or G.jokers.cards[i - 1].config.center_key ~= 'j_funmode_black_market' or G.jokers.cards[i - 1].debuff) then
+                    SMODS.debuff_card(G.jokers.cards[i], false, 'funmode_joker_black_market')
+                    SMODS.recalc_debuff(G.jokers.cards[i])
+                    end
+                end
+            end
+        if context.end_of_round and context.cardarea == G.jokers and not context.blueprint then
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] and G.jokers.cards[i].debuff then
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after',
+                        delay = 0.4,
+                        func = function()
+                            play_sound('timpani')
+                            card:juice_up(0.1, 0.5)
+                            ease_dollars(card.ability.extra.payout, true)
+                            return true
+                            end
+                    }))
+                    end
+                end
+            end
+        end
 }
