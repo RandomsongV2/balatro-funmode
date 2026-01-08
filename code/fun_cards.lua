@@ -16,7 +16,7 @@ SMODS.ConsumableType{
             text = {'undiscovered'}
         }
     },
-    shop_rate = 0.1,
+    shop_rate = 0.5,
 }
 SMODS.Atlas{
     key = 'c_undiscovered',
@@ -269,7 +269,7 @@ SMODS.Consumable{
     pos = {x = 0, y = 0},
     loc_txt = {
         name = 'No Cost Too Great',
-        text = {'{C:attention}wins{} the run'}
+        text = {'{C:attention}wins{} the run', '{C:inactive}right now might crash the game if you begin new game from `game win` menu'}
     },
     unlocked = true,
     discovered = true,
@@ -279,5 +279,6 @@ SMODS.Consumable{
         return true
         end,
     use = function(self, card, area, copier)
+        win_game()
         end
 }
