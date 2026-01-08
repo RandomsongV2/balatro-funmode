@@ -25,3 +25,12 @@ function Card:set_ability(enhancement, initial, delay_sprites)
     SMODS.calculate_context({enhancement_applied = true, enhancement_target = self, enhancement = enhancement})
     return ref
     end
+
+local copy_card_ref = copy_card
+function copy_card(card, args)
+    ref = copy_card_ref(card, args)
+    if ref.ability and ref.ability.copycard_id then
+        ref.ability.copycard_id = nil
+        end
+    return ref
+    end

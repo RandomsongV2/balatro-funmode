@@ -90,15 +90,6 @@ SMODS.Edition {
                 end
         }))
         end,
-    draw = function(self, card, layer)
-        if (layer == 'card' or layer == 'both') and card.sprite_facing == 'front' then
-            --card.children.center:draw_shader('funmode_monochrome', nil, card.ARGS.send_to_shader)
-            if card.seal then
-                G.shared_seals[card.seal].role.draw_major = card
-                G.shared_seals[card.seal]:draw_shader('funmode_monochrome', nil, card.ARGS.send_to_shader, nil, card.children.center)
-                end
-            end
-        end,
     calculate = function(self, card, context)
 
 --------------------- copy copied card changes
@@ -241,6 +232,26 @@ SMODS.Edition {
                     return true
                     end
             }))
+            end
+        end
+}
+
+SMODS.DrawStep{
+    key = 'copycard_seal',
+    order = 30,
+    func= function(card, layer)
+        if card.edition and card.edition.key == 'e_funmode_copycard' and (layer == 'card' or layer == 'both') and card.sprite_facing == 'front' and card.seal then
+            G.shared_seals[card.seal].role.draw_major = card
+            G.shared_seals[card.seal]:draw_shader('funmode_monochrome', nil, card.ARGS.send_to_shader, nil, card.children.center)
+            end
+        end
+}
+SMODS.DrawStep{
+    key = 'copycard_extra',
+    order = 20,
+    func= function(card, layer)
+        if card.edition and card.edition.key == 'e_funmode_copycard' and (layer == 'card' or layer == 'both') and card.sprite_facing == 'back' then
+            card.children.back:draw_shader('funmode_monochrome', nil, card.ARGS.send_to_shader)
             end
         end
 }

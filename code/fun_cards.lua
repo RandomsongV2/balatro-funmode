@@ -231,7 +231,6 @@ SMODS.Consumable{
                 if not G.hand.highlighted[1].ability.copied_card then
                     if _card.ability.copycard_id then
                         _card.ability.copied_card = G.hand.highlighted[1].ability.copycard_id
-                        _card.ability.copycard_id = nil
                     else
                         G.GAME.funmode_copycard_id = (G.GAME.funmode_copycard_id or 0) + 1
                         G.hand.highlighted[1].ability.copycard_id = (G.GAME.funmode_copycard_id or 0)
