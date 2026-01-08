@@ -763,7 +763,7 @@ SMODS.Joker{
 
 SMODS.Atlas{
     key = 'b_market',
-    path = 'b_market.png',
+    path = 'black_market.png',
     px = 71,
     py = 95
 }
