@@ -12,10 +12,11 @@ SMODS.Joker{
             'lose {C:money}$#1#{}',
             'when blind is selected,',
             'gain {C:money}$#2#{}',
-            'at end of round'
+            'at end of round',
+            'if not in debt'
             }
         },
-    config = {extra = {loss = 10, gain = 14}},
+    config = {extra = {loss = 10, gain = 20}},
     loc_vars = function(self, info_queue, center)
         return {vars = {center.ability.extra.loss, center.ability.extra.gain}}
         end,
@@ -34,7 +35,9 @@ SMODS.Joker{
             end
          end,
     calc_dollar_bonus = function(self, card)
-        return 14
+        if G.GAME.dollars >= 0 then
+            return 20
+            end
         end
 }
 
@@ -440,7 +443,7 @@ SMODS.Joker{
     loc_txt = {
         name = 'Twin',
         text = {
-            'Gains {X:mult,C:white}X0.5{} mult for each Twin',
+            'Gains {X:mult,C:white}X#2#{} mult for each Twin',
             'can appear multiple times',
             '{C:inactive}(currently {}{X:mult,C:white}X#1#{}{C:inactive} mult){}'
         },
@@ -455,10 +458,14 @@ SMODS.Joker{
     perishable_compat = true,
     allow_duplicates = true,
     pos = {x = 0, y = 0},
-    config = {extra = {x_mult = 1, sprite = -1, mult_scaling = 0.5}},
+    config = {extra = {x_mult = 1, sprite = -1, mult_scaling = 1}},
     loc_vars = function(self, info_queue, card)
-        --info_queue[#info_queue + 1] = G.P_CENTERS.j_funmode_twin --crashes the game, potential todo?
-        return {vars = {math.max(#SMODS.find_card("j_funmode_twin", true) * 0.5 + 0.5, 1)} }
+        --crashes the game, potential todo?
+        --nah, stencil doesnt have that
+        --if info_queue[#info_queue] == G.P_CENTERS.j_funmode_twin then
+        --info_queue[#info_queue + 1] = G.P_CENTERS.j_funmode_twin
+        --end
+        return {vars = {math.max((#SMODS.find_card("j_funmode_twin", true) - 1) * card.ability.extra.mult_scaling + 1, 1), card.ability.extra.mult_scaling} }
         end,
     calculate = function(self, card, context)
         if card.ability.extra.sprite == -1 then --todo: fix texture select if possible
@@ -467,7 +474,7 @@ SMODS.Joker{
             end
         if context.joker_main then
                 return {
-                xmult = #SMODS.find_card("j_funmode_twin", true) * 0.5 + 0.5
+                xmult = math.max((#SMODS.find_card("j_funmode_twin", true) - 1)  * card.ability.extra.mult_scaling + 1, 1)
                 }
             end
         if context.reroll_shop or context.starting_shop or context.ending_shop or context.setting_blind or context.end_of_round then
@@ -756,7 +763,7 @@ SMODS.Joker{
 
 SMODS.Atlas{
     key = 'b_market',
-    path = 'placeholder.png',
+    path = 'b_market.png',
     px = 71,
     py = 95
 }

@@ -3,11 +3,11 @@
   "name": "Fun Mode",
   "display_name": "Fun Mode",
   "author": ["RandomsongV2"],
-  "description": "Have fun!",
+  "description": "adds new jokers and fun cards",
   "prefix": "funmode",
   "main_file": "main.lua",
   "priority": 0,
   "badge_colour": "4f6367",
-  "version": "0.1",
+  "version": "0.11",
   "dependencies": []
 }
