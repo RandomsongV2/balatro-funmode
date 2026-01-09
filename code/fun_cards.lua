@@ -90,38 +90,22 @@ SMODS.Consumable{
     cost = 4,
 
     main_suit = function()
-        --this suit counting is really bad but whatever
-        local hearts = 0
-        local spades = 0
-        local clubs = 0
-        local diamonds = 0
+        local suits = {}
         if G.playing_cards then
             for _, playing_card in ipairs(G.playing_cards) do
-                if playing_card:is_suit('Hearts', nil, true) then
-                   hearts = hearts + 1
-                   end
-                if playing_card:is_suit('Spades', nil, true) then
-                   spades = spades + 1
-                   end
-                if playing_card:is_suit('Clubs', nil, true) then
-                   clubs = clubs + 1
-                   end
-                if playing_card:is_suit('Diamonds', nil, true) then
-                   diamonds = diamonds + 1
-                   end
+                if not SMODS.has_no_suit(playing_card) then
+                    suits[playing_card.config.card.suit] = (suits[playing_card.config.card.suit] or 0) + 1
+                    end
                 end
             end
-        suitamount = math.max(hearts, spades, clubs, diamonds)
-        local mostsuit = ''
-        if suitamount == hearts then
-           mostsuit = 'Hearts'
-        elseif suitamount == spades then
-           mostsuit = 'Spades'
-        elseif suitamount == clubs then
-           mostsuit = 'Clubs'
-        else
-           mostsuit = 'Diamonds'
-           end
+        local mostsuit = "Spades"
+        local mostsuit_amount = 0
+        for key, number in pairs(suits) do
+            if number > mostsuit_amount then
+                mostsuit_amount = number
+                mostsuit = key
+                end
+            end
         return mostsuit
         end,
 
@@ -269,21 +253,18 @@ SMODS.Consumable{
     pos = {x = 0, y = 0},
     loc_txt = {
         name = 'No Cost Too Great',
-        text = {'{C:attention}wins{} the run', '{C:inactive}right now might crash the game if you begin new game from `game win` menu'}
+        text = {'{C:attention}wins{} the run', 'cant use if Cost Too Low','{C:inactive}right now might','{C:inactive}crash the game if you','{C:inactive}begin new game from',"'{C:inactive}game win{}'{C:inactive} menu"}
     },
     loc_vars = function(self, info_queue, center)
-        info_queue[#info_queue + 1] = '{C:red} you can't get win by free{}'
-        return {vars = {}}
     end,
     unlocked = true,
     discovered = true,
     cost = 999,
     pools = {["Shop"] = true},
     can_use = function(self, card)
-        return card.cost > 300
+        return card.sell_cost > 300
         end,
     use = function(self, card, area, copier)
-        if card.config.cost > 300 then
-            win_game()
+        win_game()
         end
 }
