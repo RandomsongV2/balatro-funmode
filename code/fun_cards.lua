@@ -271,14 +271,19 @@ SMODS.Consumable{
         name = 'No Cost Too Great',
         text = {'{C:attention}wins{} the run', '{C:inactive}right now might crash the game if you begin new game from `game win` menu'}
     },
+    loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = '{C:red} you can't get win by free{}'
+        return {vars = {}}
+    end,
     unlocked = true,
     discovered = true,
     cost = 999,
     pools = {["Shop"] = true},
     can_use = function(self, card)
-        return true
+        return card.cost > 300
         end,
     use = function(self, card, area, copier)
-        win_game()
+        if card.config.cost > 300 then
+            win_game()
         end
 }
