@@ -938,7 +938,7 @@ SMODS.Joker{
         end,
     atlas = 'unfair_coin',
     rarity = 2,
-    cost = 3,
+    cost = 7,
     unlocked = true,
     discovered = true,
     blueprint_compat = true,
