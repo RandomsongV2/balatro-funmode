@@ -383,6 +383,8 @@ SMODS.Joker{ --really cool joker
                         achips = achips + selected.ability.extra.chips
                     elseif selected.ability.t_chips ~= nil and selected.ability.t_chips ~= 0 then
                         achips = achips + selected.ability.t_chips
+                    elseif type(selected.ability.extra) == "table" and selected.ability.extra.t_chips ~= nil and selected.ability.extra.t_chips ~= 0 then
+                        achips = achips + selected.ability.extra.t_chips
                     end
 
                     if selected.ability.mult ~= nil and selected.ability.mult ~= 0 then
@@ -391,6 +393,8 @@ SMODS.Joker{ --really cool joker
                         amult = amult + selected.ability.extra.mult
                     elseif selected.ability.t_mult ~= nil and selected.ability.t_mult ~= 0 then
                         amult = amult + selected.ability.t_mult
+                    elseif type(selected.ability.extra) == "table" and selected.ability.extra.t_mult ~= nil and selected.ability.extra.t_mult ~= 0 then
+                        amult = amult + selected.ability.extra.t_mult
                     end
 
                     if selected.ability.x_mult ~= nil and selected.ability.x_mult > 1 then
@@ -848,6 +852,126 @@ SMODS.Joker{
                     break
                     end
                 end
+            end
+        end
+}
+
+SMODS.Atlas{
+    key = '68',
+    path = 'placeholder.png',
+    px = 71,
+    py = 95
+}
+SMODS.Joker{
+    key = '68',
+    loc_txt = {
+        name = '68',
+        text = {
+            '{C:chips}+#1#{} chips',
+            'if played hand contains',
+            'scored {C:attention}6{} and {C:attention}8{}',
+            'and no scored {C:attention}7{} or {C:attention}9{}',
+            }
+        },
+    config = {extra = {chips = 68}},
+    loc_vars = function(self, info_queue, center)
+        return {vars = {center.ability.extra.chips}}
+        end,
+    atlas = '68',
+    rarity = 1,
+    cost = 3,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    calculate = function(self, card, context)
+        if context.joker_main then
+            local six = false
+            local eight = false
+            local seven_nine = false
+            for _, _card in ipairs(context.scoring_hand) do
+                if _card.config.card.value == '7' or _card.config.card.value == '9' then
+                    seven_nine = true
+                    break
+                elseif _card.config.card.value == '6' then
+                    six = true
+                    if eight then
+                        break
+                        end
+                elseif _card.config.card.value == '8' then
+                    eight = true
+                    if six then
+                        break
+                        end
+                    end
+                end
+            if not seven_nine and six and eight then
+                return {chips = card.ability.extra.chips}
+                end
+            end
+        end
+}
+
+SMODS.Atlas{
+    key = 'unfair_coin',
+    path = 'placeholder.png',
+    px = 71,
+    py = 95
+}
+SMODS.Joker{
+    key = 'unfair_coin',
+    loc_txt = {
+        name = 'Unfair Coin',
+        text = {
+            'flip the coin',
+            'until it hits tails',
+            'each head gives {C:money}$#1#',
+            'and {C:attention}doubles{} the gain',
+            'resets at end of round'
+            }
+        },
+    config = {extra = {streak = 0, used = false, msg = 'heads'}},
+    loc_vars = function(self, info_queue, center)
+        return {vars = {2 ^ center.ability.extra.streak}}
+        end,
+    atlas = 'unfair_coin',
+    rarity = 2,
+    cost = 3,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    funmode_button = {
+        text = ' flip',
+        can_use = function(self, card)
+            return not card.ability.extra.used
+            end,
+        use = function(self, card)
+            if pseudorandom("funmode_j_unfair_coin") < 0.5 then
+                ease_dollars(2 ^ card.ability.extra.streak)
+                card.ability.extra.streak = card.ability.extra.streak + 1
+                SMODS.calculate_effect({message = card.ability.extra.msg}, card)
+                card.ability.extra.msg = card.ability.extra.msg..'!'
+            else
+                if card.ability.extra.streak > 1 then
+                    SMODS.calculate_effect({message = "tails..."}, card)
+                else
+                    SMODS.calculate_effect({message = "tails"}, card)
+                    end
+                card.ability.extra.msg = 'heads'
+                card.ability.extra.used = true
+                end
+            end
+    },
+    calculate = function(self, card, context)
+        if context.end_of_round then
+            card.ability.extra.used = false
+            card.ability.extra.streak = 0
+            juice_card_until(card, function() return not card.ability.extra.used end, true)
             end
         end
 }

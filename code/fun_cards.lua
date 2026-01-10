@@ -252,14 +252,16 @@ SMODS.Consumable{
     pos = {x = 0, y = 0},
     loc_txt = {
         name = 'No Cost Too Great',
-        text = {'{C:attention}wins{} the run', 'cant use if Cost Too Low'}
+        text = {'{C:attention}wins{} the run', 'cant use if cost is too low'}
     },
     loc_vars = function(self, info_queue, center)
     end,
     unlocked = true,
     discovered = true,
     cost = 999,
-    pools = {["Shop"] = true},
+    in_pool = function(self, args)
+        return args and args.source == "shop"
+        end,
     can_use = function(self, card)
         return card.sell_cost > 300
         end,
@@ -270,6 +272,7 @@ SMODS.Consumable{
             blocking = false,
             func = function()
                 win_game()
+                G.GAME.won = true
                 return true
             end
         }))

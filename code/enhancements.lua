@@ -65,6 +65,9 @@ SMODS.Enhancement {
             end
         card.children.center:set_sprite_pos({x = x, y = y})
         end,
+    in_pool = function(self, args)
+        return false
+        end,
     calculate = function(self, card, context)
         if context.press_play and G and G.hand and G.hand.highlighted and
         card.ability.fun_observ_chance and pseudorandom("funmode_m_observed_check") < card.ability.fun_observ_chance
