@@ -1,4 +1,4 @@
-,.Shader {
+SMODS.Shader {
     key = 'monochrome',
     path = 'monochrome.fs',
     send_vars = function (sprite, card)
@@ -13,7 +13,7 @@ SMODS.Edition {
         text = {
             "balances chips and mult",
             "keeping the score",
-            "{C:inactive}(ex: {}{C:chips}100{}{C:inactive}x{}{C:mult}1{}{C:inactive} -> {}{C:chips}10{}{C:inactive}x{}{C:mult}10{}{C:inactive}){}", "{C:inactive}doesn't work{}"
+            "{C:inactive}(ex: {}{C:chips}100{}{C:inactive}x{}{C:mult}1{}{C:inactive} -> {}{C:chips}10{}{C:inactive}x{}{C:mult}10{}{C:inactive}){}"
         }
     },
     discovered = true,
@@ -247,7 +247,7 @@ SMODS.DrawStep{
         end
 }
 SMODS.DrawStep{
-    key = 'copycard_extra',
+    key = 'copycard_back',
     order = 20,
     func= function(card, layer)
         if card.edition and card.edition.key == 'e_funmode_copycard' and (layer == 'card' or layer == 'both') and card.sprite_facing == 'back' then

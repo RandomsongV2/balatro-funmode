@@ -58,3 +58,34 @@ SMODS.Blind {
             end
         end
 }
+
+SMODS.Atlas{
+    key = 'b_visitor',
+    path = 'b_visitor.png',
+    px = 34,
+    py = 32,
+    atlas_table = 'ANIMATION_ATLAS',
+    frames = 21
+}
+SMODS.Blind {
+    key = 'the_visitor',
+    loc_txt = {
+        name = 'The Visitor',
+        text = {'turns played cards',
+        'into {C:attention}observed{} cards'}
+    },
+    atlas = 'b_visitor', --will change
+    pos = {x = 0, y = 0},
+    boss_colour = HEX("646464"), --will change
+    discovered = true,
+    dollars = 5,
+    mult = 4,
+    boss = {min = 2},
+    calculate = function(self, card, context)
+        if G and G.hand and context.before then
+            for _, played_card in ipairs(context.full_hand) do
+                played_card:set_ability(G.P_CENTERS['m_funmode_observed'])
+                end
+            end
+        end
+}

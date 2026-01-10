@@ -298,7 +298,7 @@ SMODS.Joker{
     cost = 9,
     unlocked = true,
     discovered = true,
-    blueprint_compat = false,
+    blueprint_compat = true,
     eternal_compat = true,
     perishable_compat = true,
     pos = {x = 0, y = 0},
@@ -310,16 +310,22 @@ SMODS.Joker{
         end,
     calculate = function(self, card, context)
         if G.GAME.current_round.hands_played == 0 or G.GAME.current_round.hands_left == 0 then
-            if context.before and not context.blueprint then
+            if context.before then
                 if G.consumeables.config.card_limit > #G.consumeables.cards then
-                    local new_card = create_card("Tarot", G.consumeables, nil, nil, nil, nil, "c_fool")
-                    new_card:add_to_deck()
-                    G.consumeables:emplace(new_card)
-                    return true
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after',
+                        delay = 0.4,
+                        func = function()
+                            local new_card = create_card("Tarot", G.consumeables, nil, nil, nil, nil, "c_fool")
+                            new_card:add_to_deck()
+                            G.consumeables:emplace(new_card)
+                            return true
+                            end
+                    }))
                     end
                 end
             end
-        if context.individual and context.cardarea == G.play and not context.blueprint then
+        if context.individual and context.cardarea == G.play then
             if context.other_card:is_face() then
 				return {
                     x_mult = card.ability.extra.x_mult,
@@ -467,18 +473,19 @@ SMODS.Joker{
         --end
         return {vars = {math.max((#SMODS.find_card("j_funmode_twin", true) - 1) * card.ability.extra.mult_scaling + 1, 1), card.ability.extra.mult_scaling} }
         end,
-    calculate = function(self, card, context)
-        if card.ability.extra.sprite == -1 then --todo: fix texture select if possible
-            card.ability.extra.sprite = math.min(1, math.floor(pseudorandom('twinsprite') * 2))
+    set_sprites = function(self, card, front)
+        if front then
+            if not card.ability.extra.sprite then
+                card.ability.extra.sprite = math.min(1, math.floor(pseudorandom('twinsprite') * 2))
+                end
             card.children.center:set_sprite_pos({x = card.ability.extra.sprite, y = 0})
             end
+        end,
+    calculate = function(self, card, context)
         if context.joker_main then
                 return {
                 xmult = math.max((#SMODS.find_card("j_funmode_twin", true) - 1)  * card.ability.extra.mult_scaling + 1, 1)
                 }
-            end
-        if context.reroll_shop or context.starting_shop or context.ending_shop or context.setting_blind or context.end_of_round then
-            card.children.center:set_sprite_pos({x = card.ability.extra.sprite, y = 0})
             end
         end
 }
@@ -824,6 +831,21 @@ SMODS.Joker{
                             return true
                             end
                     }))
+                    end
+                end
+            end
+        if context.selling_self then
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] == card then
+                    if G.jokers.cards[i + 1] and not (G.jokers.cards[i + 2] and G.jokers.cards[i + 2].config.center_key == 'j_funmode_black_market') then
+                        SMODS.debuff_card(G.jokers.cards[i + 1], false, 'funmode_joker_black_market')
+                        SMODS.recalc_debuff(G.jokers.cards[i + 1])
+                        end
+                    if G.jokers.cards[i - 1] and not (G.jokers.cards[i - 2] and G.jokers.cards[i - 2].config.center_key == 'j_funmode_black_market') then
+                        SMODS.debuff_card(G.jokers.cards[i - 1], false, 'funmode_joker_black_market')
+                        SMODS.recalc_debuff(G.jokers.cards[i - 1])
+                        end
+                    break
                     end
                 end
             end

@@ -239,7 +239,6 @@ SMODS.Consumable{
         end
 }
 
-
 SMODS.Atlas{
     key = 'c_no_cost',
     path = 'c_no_cost.png',
@@ -253,7 +252,7 @@ SMODS.Consumable{
     pos = {x = 0, y = 0},
     loc_txt = {
         name = 'No Cost Too Great',
-        text = {'{C:attention}wins{} the run', 'cant use if Cost Too Low','{C:inactive}right now might','{C:inactive}crash the game if you','{C:inactive}begin new game from',"'{C:inactive}game win{}'{C:inactive} menu"}
+        text = {'{C:attention}wins{} the run', 'cant use if Cost Too Low'}
     },
     loc_vars = function(self, info_queue, center)
     end,
@@ -265,6 +264,14 @@ SMODS.Consumable{
         return card.sell_cost > 300
         end,
     use = function(self, card, area, copier)
-        win_game()
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after',
+            delay = 0.4,
+            blocking = false,
+            func = function()
+                win_game()
+                return true
+            end
+        }))
         end
 }
