@@ -79,7 +79,7 @@ SMODS.Consumable{
     pos = {x = 0, y = 0},
     loc_txt = {
         name = 'Spectre',
-        text = {'convert up to #1# selected',
+        text = {'Convert up to #1# selected',
                 'cards to most used suit',
                 '{C:inactive}(currently: {V:1}#2#{C:inactive}){}'
             }
@@ -193,7 +193,7 @@ SMODS.Consumable{
     pos = {x = 0, y = 0},
     loc_txt = {
         name = 'Hallway',
-        text = {'create {C:attention}copycard{} of',
+        text = {'Create {C:attention}copycard{} of',
                 'one selected card'}
     },
     config = {},
@@ -252,7 +252,7 @@ SMODS.Consumable{
     pos = {x = 0, y = 0},
     loc_txt = {
         name = 'No Cost Too Great',
-        text = {'{C:attention}wins{} the run', 'cant use if cost is too low'}
+        text = {'{C:attention}Wins{} the run', 'cant use if cost is too low'}
     },
     loc_vars = function(self, info_queue, center)
     end,
@@ -276,5 +276,54 @@ SMODS.Consumable{
                 return true
             end
         }))
+        end
+}
+
+SMODS.Atlas{
+    key = 'c_fun_soul',
+    path = 'c_no_cost.png',
+    px = 71,
+    py = 95
+}
+SMODS.Consumable{
+    key = 'fun_soul',
+    set = 'FunCards',
+    atlas = 'c_fun_soul',
+    pos = {x = 0, y = 0},
+    loc_txt = {
+        name = 'Soul at home',
+        text = {'Creates a {C:legendary}Legendary{} joker'}
+    },
+    loc_vars = function(self, info_queue, center)
+    end,
+    unlocked = true,
+    discovered = true,
+    cost = 8,
+    in_pool = function(self, args)
+        return true
+        end,
+    can_use = function(self, card)
+        return G.jokers and #G.jokers.cards < G.jokers.config.card_limit
+        end,
+    use = function(self, card, area, copier)
+        local joker = pseudorandom("fun_soul", 1, 5)
+        local name = ''
+        if joker == 1 then
+            SMODS.add_card({key = 'j_glass', area = G.jokers})
+            name = 'Canio At Home'
+        elseif joker == 2 then
+            SMODS.add_card({key = 'j_photograph', area = G.jokers})
+            name = 'Triboulet At Home'
+        elseif joker == 3 then
+            SMODS.add_card({key = 'j_burnt', area = G.jokers})
+            name = 'Yorick At Home'
+        elseif joker == 4 then
+            SMODS.add_card({key = 'j_luchador', area = G.jokers})
+            name = 'Chicot At Home'
+        elseif joker == 5 then
+            SMODS.add_card({key = 'j_cartomancer', area = G.jokers})
+            name = 'Perkeo At Home'
+            end
+        G.jokers.cards[#G.jokers.cards].ability.funmode_name = name
         end
 }

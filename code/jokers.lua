@@ -916,7 +916,7 @@ SMODS.Joker{
 
 SMODS.Atlas{
     key = 'unfair_coin',
-    path = 'placeholder.png',
+    path = 'unfair_coin.png',
     px = 71,
     py = 95
 }
@@ -927,8 +927,8 @@ SMODS.Joker{
         text = {
             'flip the coin',
             'until it hits tails',
-            'each head gives {C:money}$#1#',
-            'and {C:attention}doubles{} the gain',
+            'heads give {C:money}$#1#',
+            'and {C:attention}double{} the gain',
             'resets at end of round'
             }
         },

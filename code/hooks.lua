@@ -34,3 +34,16 @@ function copy_card(card, args)
         end
     return ref
     end
+
+--local generate_card_ui_ref = generate_card_ui
+--function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end)
+--    if specific_vars and specific_vars.name then
+--        if _c and _c.name == 'Photograph' then
+--            _c.name = 'Triboulet at home'
+--            end
+--        if specific_vars and specific_vars.name == 'Photograph' then
+--            specific_vars.name = 'Triboulet at home'
+--            end
+--        end
+--    return generate_card_ui_ref(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end)
+--    end
