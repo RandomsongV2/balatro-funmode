@@ -2,13 +2,6 @@
 --(copycard enhancement is a scam, copycard is edition)
 SMODS.Enhancement {
     key = 'copycard',
-    loc_txt = {name = "Copycard",
-               label = "Copycard",
-               text = {"copies other card's",
-                       "{C:attention}rank{}, {C:attention}enhancement{} and {C:attention}seal{}",
-                       "changes with copied card",
-                       "{C:inactive,s:0.9}copies are always monochrome{}"}
-                       },
     replace_base_card = true,
     overrides_base_rank = true,
     weight = 0,
@@ -32,13 +25,6 @@ SMODS.Atlas{
 }
 SMODS.Enhancement {
     key = 'observed',
-    loc_txt = {
-        name = 'Observed',
-        text = {
-        '{C:mult}+3{} mult',
-        'no rank',
-        'has a {C:attention}mind'}
-    },
     config = {
             mult = 3,
             fun_observ_chance = 1

@@ -55,11 +55,9 @@ vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords
 
     number maxfac = 0.7*max(max(fac, max(fac2, max(fac3,0.0))) + (fac+fac2+fac3*fac4), 0.);
     number color_rgb = tex.r*0.3 + tex.g*0.59 + tex.b*0.11 + (tex.r-delta*0.3 + tex.g-delta*0.59 + tex.b-delta*0.11 + delta*maxfac*(0.7 - fac5*0.27) - 0.1)*monochrome.x*0.005;
-    //color_mono: 0 - all, 1 - red only, 2 - green only, 3 - blue only
-    number color_mono = 0;
-    tex.r = color_rgb * (color_mono - 2.0) * (color_mono - 3.0) / (6.0 - (color_mono * 4.0));
-    tex.g = color_rgb * (color_mono - 1.0) * (color_mono - 3.0) / (3.0 - (color_mono * 2.5));
-    tex.b = color_rgb * (color_mono - 1.0) * (color_mono - 2.0) / 2.0;
+    tex.r = color_rgb;
+    tex.g = color_rgb;
+    tex.b = color_rgb;
 
     // required
     return dissolve_mask(tex*colour, texture_coords, uv);

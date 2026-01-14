@@ -34,9 +34,3 @@ function copy_card(card, args)
         end
     return ref
     end
-
-local generate_card_ui_ref = generate_card_ui
-function generate_card_ui(center, full_UI_table, vars, card_type, badges, hide_desc, main_start, main_end, card)
-    local full_UI_table = generate_card_ui_ref(center, full_UI_table, vars, card_type, badges, hide_desc, main_start, main_end, card)
-    return full_UI_table
-    end

@@ -35,7 +35,7 @@ SMODS.Joker{
     key = 'handcuffs',
     atlas ='jokers',
     rarity = 2,
-    cost = 8,
+    cost = 6,
     unlocked = true,
     discovered = true,
     blueprint_compat = true,
@@ -370,7 +370,7 @@ SMODS.Joker{
 
 SMODS.Atlas{
     key = 'YTTL',
-    path = 'joker_yttl.png',
+    path = 'other_size_jokers/yttl.png',
     px = 206,
     py = 168
 }
@@ -492,7 +492,7 @@ SMODS.Joker{
 
 SMODS.Atlas{
     key = 'minos_prime',
-    path = 'joker_minos_prime.png',
+    path = 'other_size_jokers/minos_prime.png',
     px = 316,
     py = 1022
 }
@@ -730,6 +730,41 @@ SMODS.Joker{ -- my new favorite
             card.ability.extra.used = false
             card.ability.extra.streak = 0
             juice_card_until(card, function() return not card.ability.extra.used end, true)
+            end
+        end
+}
+
+
+SMODS.Atlas{
+    key = 'the_roaring_knight',
+    path = 'other_size_jokers/rory_nyte.png',
+    px = 80,
+    py = 97,
+    atlas_table = 'ANIMATION_ATLAS',
+    frames = 70,
+    fps = 30
+}
+SMODS.Joker{
+    key = 'knight',
+    config = {extra = {scaling = 1}},
+    loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = G.P_CENTERS.c_aura
+        return {vars = {center.ability.extra.scaling, 1 + center.ability.extra.scaling *
+        (G.GAME.consumeable_usage and G.GAME.consumeable_usage.c_aura and G.GAME.consumeable_usage.c_aura.count or 0)}}
+        end,
+    atlas = 'the_roaring_knight',
+    pos = {x = 0, y = 0},
+    display_size = {w = 80, h = 97},
+    rarity = 3,
+    cost = 9,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            return {Xmult = 1 + card.ability.extra.scaling * (G.GAME.consumeable_usage and G.GAME.consumeable_usage.c_aura and G.GAME.consumeable_usage.c_aura.count or 0)}
             end
         end
 }

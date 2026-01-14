@@ -180,6 +180,15 @@ return {
                     'resets at end of round'
                     }
                 },
+            j_funmode_knight = {
+                name = 'The Roaring Knight',
+                text = {
+                    'Gains {X:mult,C:white}X#1#{} mult',
+                    'For each {C:spectral}Aura{} used',
+                    'This run',
+                    '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive})'
+                    },
+                },
             },
         Blind = {
             bl_funmode_visitor = {
