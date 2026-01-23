@@ -16,8 +16,19 @@ SMODS.Edition {
     extra_cost = 1,
     apply_to_float = true,
     loc_vars = function(self)
-        return {}
-    end
+        end,
+    calculate = function(self, card, context)
+        if context.main_scoring and context.cardarea == G.play then
+            return {
+            func = function()
+                hand_chips, mult = mod_chips(math.ceil(math.sqrt(hand_chips * mult))), mod_mult(math.floor(math.sqrt(hand_chips * mult)))
+                update_hand_text({sound = 'button', modded = true}, {chips = chips, mult = mult})
+                return true
+                end,
+            }
+            end
+
+        end
 }
 
 local rank_to_string = function(rank)
@@ -73,7 +84,18 @@ SMODS.Edition {
                 end
         }))
         end,
+
     calculate = function(self, card, context)
+    -- faking monochrome edition
+        if context.main_scoring and context.cardarea == G.play then
+            return {
+            func = function()
+                hand_chips, mult = mod_chips(math.ceil(math.sqrt(hand_chips * mult))), mod_mult(math.floor(math.sqrt(hand_chips * mult)))
+                update_hand_text({sound = 'button', modded = true}, {chips = chips, mult = mult})
+                return true
+                end,
+            }
+            end
 
 --------------------- copy copied card changes
 
@@ -112,7 +134,6 @@ SMODS.Edition {
                     break
                     end
                 end
-
             if _card == nil then
                 card:start_dissolve({HEX("57ecab")}, nil, 1.6)
                 SMODS.draw_cards(1)
@@ -131,6 +152,7 @@ SMODS.Edition {
                     SMODS.change_base(card, _card.config.card.suit, _card.config.card.value)
                     end
                 end
+            save_run()
             end
 
 

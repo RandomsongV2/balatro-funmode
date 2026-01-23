@@ -177,16 +177,16 @@ SMODS.Consumable{
                     if _card.ability.copycard_id then
                         _card.ability.copied_card = G.hand.highlighted[1].ability.copycard_id
                     else
-                        G.GAME.funmode_copycard_id = (G.GAME.funmode_copycard_id or 0) + 1
-                        G.hand.highlighted[1].ability.copycard_id = (G.GAME.funmode_copycard_id or 0)
-                        _card.ability.copied_card = G.GAME.funmode_copycard_id or 0
+                        G.GAME.funmode.copycard_id = (G.GAME.funmode.copycard_id or 0) + 1
+                        G.hand.highlighted[1].ability.copycard_id = (G.GAME.funmode.copycard_id or 0)
+                        _card.ability.copied_card = G.GAME.funmode.copycard_id or 0
                         end
                     _card.ability.funmode_extra = {}
                     _card.ability.funmode_extra.rank = G.hand.highlighted[1].config.card.value
                     _card.ability.funmode_extra.suit = G.hand.highlighted[1].config.card.suit
                     _card.ability.funmode_extra.seal = G.hand.highlighted[1].seal
                     _card.ability.funmode_extra.enhancement = G.hand.highlighted[1].config.center_key
-                    _card:set_edition('e_funmode_copycard', true, true)
+                    _card:set_edition('e_funmode.copycard', true, true)
                     end
                 _card:add_to_deck()
                 G.deck.config.card_limit = G.deck.config.card_limit + 1
@@ -266,6 +266,7 @@ SMODS.Consumable{
             _list[5] = true
             end
         local key = ''
+        local name = nil
         if _list[1] and _list[2] and _list[3] and _list[4] and _list[5] then
             key = 'j_joker'
         else
@@ -274,19 +275,30 @@ SMODS.Consumable{
                 if not _list[joker] then
                     if joker == 1 then
                         key = 'j_glass'
+                        name = "Canio At Home"
                     elseif joker == 2 then
                         key = 'j_photograph'
+                        name = "Triboulet At Home"
                     elseif joker == 3 then
                         key = 'j_burnt'
+                        name = "Yorick At Home"
                     elseif joker == 4 then
                         key = 'j_luchador'
+                        name = "Chikot At Home"
                     elseif joker == 5 then
                         key = 'j_cartomancer'
+                        name = "Perkeo At Home"
                         end
                     break
                     end
                 end
             end
         SMODS.add_card({key = key, area = G.jokers})
+        if name and G.jokers.cards[#G.jokers.cards].config.center_key == key then
+            if not G.jokers.cards[#G.jokers.cards].ability.funmode_extra then
+                G.jokers.cards[#G.jokers.cards].ability.funmode_extra = {}
+                end
+            G.jokers.cards[#G.jokers.cards].ability.funmode_extra.name = name
+            end
         end
 }

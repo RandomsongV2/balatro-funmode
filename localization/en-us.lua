@@ -189,6 +189,66 @@ return {
                     '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive})'
                     },
                 },
+            j_funmode_grinning_beast = {
+                name = 'Grinning Beast',
+                text = {
+                    'When {C:attention}first hand of round{} drawn',
+                    '{C:red}destroy{} #1# random cards',
+                    '{C:red}jokers and consumeables included'
+                    },
+                },
+            j_funmode_whiplash = {
+                name = 'Whiplash',
+                text = {
+                    'Choose {C:attention}one{} card',
+                    'that will be {C:attention}guaranteed{} to draw',
+                    'current card: {V:1}#1#{} of {V:2}#2#',
+                    '{C:inactive}does not work{}'
+                    },
+                },
+            j_funmode_glass_cannon = {
+                name = 'Glass Cannon',
+                text = {
+                    'all played cards count as {C:attention}glass{}',
+                    'When hand played',
+                    '{C:green}#1# in #2#{} chance to {C:red}destroy{} this joker'
+                    },
+                },
+            j_funmode_evil = {
+                name = 'Evil Joker',
+                text = {
+                    'When blind selected',
+                    'gain {X:mult,C:white}X#1#{} Mult',
+                    'if its the only joker',
+                    'currently {X:mult,C:white}X#2#'
+                    },
+                },
+            j_funmode_insurance = {
+                name = 'Insurance',
+                text = {
+                    'When blind selected',
+                    'lose {C:money}$#1#{}',
+                    'at end of boss blind',
+                    'gain {C:money}$#2#{} for',
+                    'each debuffed card in deck'
+                    },
+                },
+            j_funmode_infini_eight = {
+                name = 'infini-eight',
+                text = {
+                    'gains {X:mult,C:white}x#1#{} mult',
+                    ' per consecutively scored {c:attention}8',
+                    '{c:inactive}currently {x:mult,c:white}x#2#'
+                    },
+                },
+            j_funmode_wing_ding = {
+                name = 'Wing Ding',
+                text = {
+                    '{X:mult,C:white}X#1#{} Mult',
+                    '{f:funmode_wingdings}Sets font to wingdings',
+                    '{C:inactive}should set font to wingdings but currently does not work{}'
+                    },
+                },
             },
         Blind = {
             bl_funmode_visitor = {

@@ -51,6 +51,8 @@ SMODS.Joker{
             return {
                 func = function()
                     G.E_MANAGER:add_event(Event({
+                        trigger = 'after',
+                        delay = 0.3,
                         func = function()
                             ease_discard(card.ability.extra.discards, nil, true)
                             ease_hands_played(2 - G.GAME.current_round.hands_left)
@@ -181,6 +183,9 @@ SMODS.Joker{
     perishable_compat = true,
     pos = {x = 3, y = 3},
     soul_pos = {x = 4, y = 3},
+    in_pool = function(self, args)
+        return False
+        end,
     calculate = function(self, card, context)
             if context.end_of_round and context.cardarea == G.jokers then
                 menu = function()
@@ -699,16 +704,16 @@ SMODS.Joker{ -- my new favorite
     cost = 7,
     unlocked = true,
     discovered = true,
-    blueprint_compat = true,
+    blueprint_compat = false,
     eternal_compat = true,
     perishable_compat = true,
     pos = {x = 0, y = 3},
     funmode_button = {
         text = ' flip',
-        can_use = function(self, card)
+        can_use = function(card)
             return not card.ability.extra.used
             end,
-        use = function(self, card)
+        use = function(card)
             if pseudorandom("funmode_j_unfair_coin") < 0.5 then
                 ease_dollars(2 ^ card.ability.extra.streak)
                 card.ability.extra.streak = card.ability.extra.streak + 1
@@ -765,6 +770,236 @@ SMODS.Joker{
     calculate = function(self, card, context)
         if context.joker_main then
             return {Xmult = 1 + card.ability.extra.scaling * (G.GAME.consumeable_usage and G.GAME.consumeable_usage.c_aura and G.GAME.consumeable_usage.c_aura.count or 0)}
+            end
+        end
+}
+
+SMODS.Joker {
+    key = 'grinning_beast',
+    config = {extra = {destroy = 3}},
+    loc_vars = function(self, querry, center)
+        return {vars = {center.ability.extra.destroy}}
+        end,
+    rarity = 2,
+    discovered = true,
+    atlas = 'jokers',
+    cost = 6,
+    pos = {x = 2, y = 4},
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    calculate = function(self, card, context)
+        if context.hand_drawn and G.GAME.current_round.discards_used <= 0 and G.GAME.current_round.hands_played <= 0 then
+            for i = 1, card.ability.extra.destroy do
+                local select = pseudorandom("funmode_leigh", 1, #G.hand.cards + #G.jokers.cards + #G.consumeables.cards)
+                local select1 = nil
+                if select <= #G.hand.cards then
+                    select1 = G.hand.cards[select]
+                elseif select <= #G.hand.cards + #G.jokers.cards then
+                    select1 = G.jokers.cards[select - #G.hand.cards]
+                else
+                    select1 = G.consumeables.cards[select - #G.hand.cards - #G.jokers.cards]
+                    end
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after',
+                    delay = 0.3,
+                    func = function()
+                        card:juice_up(0.8, 0.8)
+                        select1:start_dissolve({ HEX("57ecab") }, nil, 1.0)
+                        play_sound('slice1', 0.96 + math.random() * 0.08)
+                        return true
+                        end
+                    }))
+                end
+            save_run()
+            end
+        end
+}
+
+SMODS.Joker{
+    key = 'whiplash',
+    config = {extra = {selected_card = nil}},
+    loc_vars = function(self, info_queue, center)
+        if selected_card then
+            return {vars = {localize(selected_card.config.card.value, 'ranks'), localize(selected_card.config.card.suit, 'suits_plural'), colours = {G.C.FILTER, G.C.SUITS[selected_card.config.card.suit]}}}
+            end
+        return {vars = {'None', 'None', colours = {G.C.UI.TEXT_INACTIVE, G.C.UI.TEXT_INACTIVE}}}
+        end,
+    atlas = 'jokers',
+    rarity = 3,
+    cost = 10,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = false,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 3, y = 4},
+    funmode_button = {
+        text = ' hook',
+        can_use = function(card)
+            return true
+            end,
+        use = function(card)
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    G.funmode.whiplash = true
+                    G.FUNCS.overlay_menu({definition = G.UIDEF.deck_info(true)})
+                    return true
+                end
+            }))
+            end
+    },
+    in_pool = function(self, args)
+        return False
+        end,
+    calculate = function(self, card, context)
+        end
+}
+
+SMODS.Joker{
+    key = 'glass_cannon',
+    config = {extra = {odds = 6}},
+    loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = G.P_CENTERS.m_glass
+        return {vars = {G.GAME.probabilities.normal, center.ability.extra.odds}}
+        end,
+    atlas = 'jokers',
+    rarity = 2,
+    cost = 7,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = false,
+    eternal_compat = false,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    calculate = function(self, card, context)
+        if context.press_play then
+            for _, _card in ipairs(G.hand.highlighted) do
+                _card.funmode_glass = true
+                end
+            end
+        if context.check_enhancement and context.other_card.funmode_glass and not context.blueprint then
+            return {m_glass = true}
+            end
+        if context.final_scoring_step and pseudorandom('gamba') < G.GAME.probabilities.normal/card.ability.extra.odds and not context.blueprint then
+            for _, _card in ipairs(G.hand.highlighted) do
+                _card.funmode_glass = false
+                end
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after',
+                delay = 0.4,
+                func = function()
+                    G.GAME.joker_buffer = 0
+                    card:start_dissolve({ HEX("57ecab") }, true, 1.6)
+                    play_sound('glass2', 0.96 + math.random() * 0.08)
+                    return true
+                end
+            }))
+            end
+        end
+}
+
+SMODS.Joker{
+    key = 'evil',
+    config = {extra = {xmult = 1.0, gain = 0.5}},
+    loc_vars = function(self, info_queue, center)
+        return {vars = {center.ability.extra.gain, center.ability.extra.xmult}}
+        end,
+    atlas = 'jokers',
+    rarity = 2,
+    cost = 7,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 4, y = 4},
+    calculate = function(self, card, context)
+        if context.setting_blind and #G.jokers.cards == 1 then
+            card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.gain
+            return {message = localize {type = 'variable', key = 'a_xmult', vars = {card.ability.extra.xmult}}}
+            end
+        if context.joker_main then
+            return {Xmult = card.ability.extra.xmult}
+            end
+        end
+}
+
+SMODS.Joker{
+    key = 'insurance',
+    config = {extra = {pay = 2, gain = 1}},
+    loc_vars = function(self, info_queue, center)
+        return {vars = {center.ability.extra.pay, center.ability.extra.gain}}
+        end,
+    atlas = 'jokers',
+    rarity = 2,
+    cost = 6,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    calculate = function(self, card, context)
+        if context.setting_blind then
+            ease_dollars(- card.ability.extra.pay)
+            end
+        if context.end_of_round and context.main_eval and context.beat_boss and not context.game_over then
+            local money = 0
+            for _, _card in ipairs(G.playing_cards) do
+                if _card.debuff then
+                    money = money + card.ability.extra.gain
+                    end
+                end
+            ease_dollars(money)
+            end
+        end
+}
+
+SMODS.Joker{
+    key = 'infini_eight',
+    config = {extra = {xmult = 1.0, gain = 0.1}},
+    loc_vars = function(self, info_queue, center)
+        return {vars = {center.ability.extra.gain, center.ability.extra.xmult}}
+        end,
+    atlas = 'jokers',
+    rarity = 1,
+    cost = 5,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    calculate = function(self, card, context)
+        if context.individual and context.cardarea == G.play and context.other_card:get_id() == 8 and not context.blueprint then
+            card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.gain
+            end
+        if context.joker_main then
+            return {Xmult = card.ability.extra.xmult}
+            end
+        end
+}
+
+SMODS.Joker{
+    key = 'wing_ding',
+    config = {extra = {xmult = 2}},
+    loc_vars = function(self, info_queue, center)
+        return {vars = {center.ability.extra.xmult}}
+        end,
+    atlas = 'jokers',
+    rarity = 2,
+    cost = 5,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    calculate = function(self, card, context)
+        if context.joker_main then
+            return {Xmult = card.ability.extra.xmult}
             end
         end
 }
