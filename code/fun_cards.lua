@@ -33,7 +33,7 @@ SMODS.Consumable{
     key = 'gamba',
     set = 'FunCard',
     atlas = 'fun_cards',
-    pos = {x = 0, y = 0},
+    pos = {x = 0, y = 2},
     config = {money = 10},
     unlocked = true,
     discovered = true,
@@ -186,7 +186,7 @@ SMODS.Consumable{
                     _card.ability.funmode_extra.suit = G.hand.highlighted[1].config.card.suit
                     _card.ability.funmode_extra.seal = G.hand.highlighted[1].seal
                     _card.ability.funmode_extra.enhancement = G.hand.highlighted[1].config.center_key
-                    _card:set_edition('e_funmode.copycard', true, true)
+                    _card:set_edition('e_funmode_copycard', true, true)
                     end
                 _card:add_to_deck()
                 G.deck.config.card_limit = G.deck.config.card_limit + 1
@@ -211,7 +211,7 @@ SMODS.Consumable{
     discovered = true,
     cost = 999,
     in_pool = function(self, args)
-        return args and args.source == "shop"
+        return args and args.source == "sho"
         end,
     can_use = function(self, card)
         return card.sell_cost > 300
@@ -298,7 +298,52 @@ SMODS.Consumable{
             if not G.jokers.cards[#G.jokers.cards].ability.funmode_extra then
                 G.jokers.cards[#G.jokers.cards].ability.funmode_extra = {}
                 end
-            G.jokers.cards[#G.jokers.cards].ability.funmode_extra.name = name
+            G.jokers.cards[#G.jokers.cards].ability.funmode_extra.name = {name}
             end
+        end
+}
+
+SMODS.Consumable{
+    key = 'color_wheel',
+    set = 'FunCard',
+    atlas = 'fun_cards',
+    pos = {x = 1, y = 2},
+    loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = G.P_CENTERS.e_polychrome
+        info_queue[#info_queue + 1] = G.P_CENTERS.e_funmode_monochrome
+        end,
+    unlocked = true,
+    discovered = true,
+    cost = 6,
+    can_use = function(self, card)
+        return G.hand and next(SMODS.Edition:get_edition_cards(G.hand, true))
+        end,
+    use = function(self, card, area, copier)
+        local editionless_cards = SMODS.Edition:get_edition_cards(G.hand, true)
+        local eligible_card = pseudorandom_element(editionless_cards, pseudoseed("funmode_color_wheel"))
+        local edition = poll_edition('funmode_color_wheel', nil, true, true, {'e_polychrome', 'e_funmode_monochrome'})
+        eligible_card:set_edition(edition, true)
+        check_for_unlock({type = 'have_edition'})
+        end
+}
+
+SMODS.Consumable{
+    key = 'phonewave',
+    set = 'FunCard',
+    atlas = 'fun_cards',
+    pos = {x = 2, y = 2},
+    loc_vars = function(self, info_queue, center)
+        return {vars = {G.GAME and G.GAME.funmode and G.GAME.funmode.prev_seed or 'None'}}
+        end,
+    unlocked = true,
+    discovered = true,
+    cost = 5,
+    can_use = function(self, card)
+        return true
+        end,
+    use = function(self, card, area, copier)
+        G.GAME.funmode.prev_seed = G.GAME.pseudorandom.seed
+        G.GAME.pseudorandom.seed = generate_starting_seed()
+        save_run()
         end
 }

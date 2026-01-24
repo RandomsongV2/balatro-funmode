@@ -1,5 +1,5 @@
 SMODS.current_mod.optional_features = {
-    retrigger_joker = true,
+    retrigger_joker = false,
     post_trigger = false,
     quantum_enhancements = true,
     cardareas = {

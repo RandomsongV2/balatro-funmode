@@ -5,63 +5,30 @@
 #endif
 
 //monochrome shader by RandomsongV2
-
-// !! change this variable name to your Shader's name
-// YOU MUST USE THIS VARIABLE IN THE vec4 effect AT LEAST ONCE
-
-// Values of this variable:
-// self.ARGS.send_to_shader[1] = math.min(self.VT.r*3, 1) + (math.sin(G.TIMERS.REAL/28) + 1) + (self.juice and self.juice.r*20 or 0) + self.tilt_var.amt
-// self.ARGS.send_to_shader[2] = G.TIMERS.REAL
 extern PRECISION vec2 monochrome;
 
 extern PRECISION number dissolve;
 extern PRECISION number time;
-// [Note] sprite_pos_x _y is not a pixel position!
-//        To get pixel position, you need to multiply
-//        it by sprite_width _height (look flipped.fs)
-// (sprite_pos_x, sprite_pos_y, sprite_width, sprite_height) [not normalized]
 extern PRECISION vec4 texture_details;
-// (width, height) for atlas texture [not normalized]
 extern PRECISION vec2 image_details;
 extern bool shadow;
 extern PRECISION vec4 burn_colour_1;
 extern PRECISION vec4 burn_colour_2;
 
-// [Required]
-// Apply dissolve effect (when card is being "burnt", e.g. when consumable is used)
 vec4 dissolve_mask(vec4 tex, vec2 texture_coords, vec2 uv);
 
-// This is what actually changes the look of card
 vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords )
 {
-    // Take pixel color (rgba) from `texture` at `texture_coords`, equivalent of texture2D in GLSL
     vec4 tex = Texel(texture, texture_coords);
-    // Position of a pixel within the sprite
 	vec2 uv = (((texture_coords)*(image_details)) - texture_details.xy*texture_details.ba)/texture_details.ba;
-
-    // For all vectors (vec2, vec3, vec4), .rgb is equivalent of .xyz, so uv.y == uv.g
-    // .a is last parameter for vec4 (usually the alpha channel - transparency)
-
-    // generic shimmer copied straight from negative_shine.fs
-    number low = min(tex.r, min(tex.g, tex.b));
-    number high = max(tex.r, max(tex.g, tex.b));
-    number delta = high-low -0.1;
-
-    number fac = 0.8 + 0.9*sin(11.*uv.x+4.32*uv.y + monochrome.r*12. + cos(monochrome.r*5.3 + uv.y*4.2 - uv.x*4.));
-    number fac2 = 0.5 + 0.5*sin(8.*uv.x+2.32*uv.y + monochrome.r*5. - cos(monochrome.r*2.3 + uv.x*8.2));
-    number fac3 = 0.5 + 0.5*sin(10.*uv.x+5.32*uv.y + monochrome.r*6.111 + sin(monochrome.r*5.3 + uv.y*3.2));
-    number fac4 = 0.5 + 0.5*sin(3.*uv.x+2.32*uv.y + monochrome.r*8.111 + sin(monochrome.r*1.3 + uv.y*11.2));
-    number fac5 = sin(0.9*16.*uv.x+5.32*uv.y + monochrome.r*12. + cos(monochrome.r*5.3 + uv.y*4.2 - uv.x*4.));
-
-    number maxfac = 0.7*max(max(fac, max(fac2, max(fac3,0.0))) + (fac+fac2+fac3*fac4), 0.);
-    number color_rgb = tex.r*0.3 + tex.g*0.59 + tex.b*0.11 + (tex.r-delta*0.3 + tex.g-delta*0.59 + tex.b-delta*0.11 + delta*maxfac*(0.7 - fac5*0.27) - 0.1)*monochrome.x*0.005;
+    number color_rgb = tex.r*0.299 + tex.g*0.587 + tex.b*0.114 + monochrome.x*0.005;
     tex.r = color_rgb;
     tex.g = color_rgb;
     tex.b = color_rgb;
-
-    // required
     return dissolve_mask(tex*colour, texture_coords, uv);
 }
+
+//useless things
 
 vec4 dissolve_mask(vec4 tex, vec2 texture_coords, vec2 uv)
 {
@@ -101,7 +68,6 @@ vec4 dissolve_mask(vec4 tex, vec2 texture_coords, vec2 uv)
     return vec4(shadow ? vec3(0.,0.,0.) : tex.xyz, res > adjusted_dissolve ? (shadow ? tex.a*0.3: tex.a) : .0);
 }
 
-// for transforming the card while your mouse is on it
 extern PRECISION vec2 mouse_screen_pos;
 extern PRECISION float hovering;
 extern PRECISION float screen_scale;

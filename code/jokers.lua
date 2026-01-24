@@ -217,7 +217,7 @@ SMODS.Joker{
         return {vars = {center.ability.extra.x_mult}}
         end,
     calculate = function(self, card, context)
-        if G.GAME.current_round.hands_played < 3 then
+        --if G.GAME.current_round.hands_played < 3 then
             if context.before then
                 if G.consumeables.config.card_limit > #G.consumeables.cards then
                     G.E_MANAGER:add_event(Event({
@@ -232,7 +232,7 @@ SMODS.Joker{
                     }))
                     end
                 end
-            end
+        --    end
         if context.individual and context.cardarea == G.play then
             if context.other_card:is_face() then
 				return {
@@ -1000,6 +1000,39 @@ SMODS.Joker{
     calculate = function(self, card, context)
         if context.joker_main then
             return {Xmult = card.ability.extra.xmult}
+            end
+        end
+}
+
+SMODS.Joker{
+    key = 'apartment_13',
+    atlas ='jokers',
+    rarity = 2,
+    cost = 6,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 5, y = 0},
+    config = {extra = {hands = 1}},
+    loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = G.P_CENTERS.c_earth
+        return {vars = {center.ability.extra.hands}}
+        end,
+    add_to_deck = function(self, card, from_debuff)
+        G.GAME.round_resets.hands = G.GAME.round_resets.hands - card.ability.extra.hands
+        end,
+    remove_from_deck = function(self, card, from_debuff)
+        G.GAME.round_resets.hands = G.GAME.round_resets.hands + card.ability.extra.hands
+        end,
+    calculate = function(self, card, context)
+        if context.end_of_round and context.cardarea == G.jokers then
+            if G.consumeables.config.card_limit > #G.consumeables.cards then
+                local new_card = create_card("Planet", G.consumeables, nil, nil, nil, nil, "c_earth")
+                new_card:add_to_deck()
+                G.consumeables:emplace(new_card)
+                end
             end
         end
 }

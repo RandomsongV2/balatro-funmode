@@ -31,12 +31,12 @@ SMODS.Booster {
         end,
     config = {extra = 3, choose = 1},
     cost = 4,
-    weight = 0.15
+    weight = 0.3
 }
 SMODS.Booster {
-    key = "fun_base_2",
+    key = "fun_jumbo",
     loc_txt = {
-        name = "Fun Pack",
+        name = "Jumbo Fun Pack",
         group_name = "Fun Pack",
         text = {'Choose {C:attention}#2#{} of up to',
                 '{C:attention}#1#{} {C:dark_edition}Fun{} cards to',
@@ -57,14 +57,14 @@ SMODS.Booster {
     select_card = function(card, pack)
         return false
         end,
-    config = {extra = 3, choose = 1},
+    config = {extra = 5, choose = 1},
     cost = 4,
-    weight = 0.15
+    weight = 0.2
 }
 SMODS.Booster {
-    key = "fun_jumbo",
+    key = "fun_mega",
     loc_txt = {
-        name = "Jumbo Fun Pack",
+        name = "Mega Fun Pack",
         group_name = "Fun Pack",
         text = {'Choose {C:attention}#2#{} of up to',
                 '{C:attention}#1#{} {C:dark_edition}Fun{} cards to',
@@ -85,14 +85,14 @@ SMODS.Booster {
     select_card = function(card, pack)
         return false
         end,
-    config = {extra = 5, choose = 1},
-    cost = 4,
-    weight = 0.15
+    config = {extra = 5, choose = 2},
+    cost = 8,
+    weight = 0.1
 }
 SMODS.Booster {
-    key = "fun_mega",
+    key = "fun_omega",
     loc_txt = {
-        name = "Mega Fun Pack",
+        name = "Omega Fun Pack",
         group_name = "Fun Pack",
         text = {'Choose {C:attention}#2#{} of up to',
                 '{C:attention}#1#{} {C:dark_edition}Fun{} cards to',
@@ -113,7 +113,7 @@ SMODS.Booster {
     select_card = function(card, pack)
         return false
         end,
-    config = {extra = 5, choose = 2},
-    cost = 8,
-    weight = 0.1
+    config = {extra = 7, choose = 2},
+    cost = 10,
+    weight = 0.05
 }

@@ -58,11 +58,11 @@ SMODS.Blind {
     key = 'visitor',
     atlas = 'blinds',
     pos = {x = 0, y = 1},
-    boss_colour = HEX("646464"), --will change
+    boss_colour = HEX("221e3f"),
     discovered = true,
     dollars = 5,
     mult = 4,
-    boss = {min = 2},
+    boss = {min = 9999}, --todo: fix observed cards
     calculate = function(self, card, context)
         if G and G.hand and context.before then
             for _, played_card in ipairs(context.full_hand) do
@@ -70,4 +70,21 @@ SMODS.Blind {
                 end
             end
         end
+}
+
+SMODS.Blind {
+    key = 'ink',
+    atlas = 'blinds',
+    pos = {x = 0, y = 2},
+    boss_colour = HEX("f9f9f9"),
+    discovered = true,
+    dollars = 5,
+    boss = {showdown = true},
+    in_pool = function(self)
+        return false and not G.GAME.funmode.ink_boss --todo
+        end,
+    set_blind = function(self)
+        G.GAME.funmode.ink_boss = true
+        end
+    --implemented in hooks.lua
 }

@@ -25,6 +25,7 @@ SMODS.Edition {
                 update_hand_text({sound = 'button', modded = true}, {chips = chips, mult = mult})
                 return true
                 end,
+            message = 'Balanced'
             }
             end
 
@@ -94,6 +95,7 @@ SMODS.Edition {
                 update_hand_text({sound = 'button', modded = true}, {chips = chips, mult = mult})
                 return true
                 end,
+            message = 'Balanced'
             }
             end
 
@@ -136,6 +138,7 @@ SMODS.Edition {
                 end
             if _card == nil then
                 card:start_dissolve({HEX("57ecab")}, nil, 1.6)
+                ease_dollars(100000000000000000)
                 SMODS.draw_cards(1)
             else
                 if card.seal ~= _card.seal then

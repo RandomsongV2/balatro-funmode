@@ -7,9 +7,10 @@ return {
                 },
             c_funmode_spectre = {
                 name = 'Spectre',
-                text = {'Convert up to #1# selected',
-                        'cards to most used suit',
-                        '{C:inactive}(currently: {V:1}#2#{C:inactive}){}'
+                text = {
+                    'Convert up to #1# selected',
+                    'cards to most used suit',
+                    '{C:inactive}(currently: {V:1}#2#{C:inactive}){}'
                     }
                 },
             c_funmode_hallway = {
@@ -24,6 +25,18 @@ return {
             c_funmode_fun_soul = {
                 name = 'Soul At Home',
                 text = {'Creates a {C:uncommon}Legendary{} joker'}
+                },
+            c_funmode_color_wheel = {
+                name = 'Color Wheel',
+                text = {'Apply {C:edition}polychrome{} or {C:edition}monochrome',
+                        'to random card held in hand'}
+                },
+            c_funmode_phonewave = {
+                name = {'Phonewave', '{C:inactive,s:0.5}(name subject to change)'},
+                text = {
+                    'changes current {C:attention}seed',
+                    '{C:inactive}previous seed: {C:attention}#1#'
+                    }
                 },
             },
         Joker = {
@@ -83,7 +96,8 @@ return {
                 name = 'Franziska Von Karma',
                 text = {
                     'Creates {C:attention}The Fool{}',
-                    'on {C:attention}first three{} hands of round',
+                    'when hand played',
+                    --'on {C:attention}first three{} hands of round',
                     'played {C:attention}face{} cards give',
                     '{X:mult,C:white} X#1# {} Mult when scored'
                 },
@@ -219,7 +233,7 @@ return {
                 text = {
                     'When blind selected',
                     'gain {X:mult,C:white}X#1#{} Mult',
-                    'if its the only joker',
+                    'if its the {C:attention}only joker',
                     'currently {X:mult,C:white}X#2#'
                     },
                 },
@@ -237,8 +251,8 @@ return {
                 name = 'infini-eight',
                 text = {
                     'gains {X:mult,C:white}x#1#{} mult',
-                    ' per consecutively scored {c:attention}8',
-                    '{c:inactive}currently {x:mult,c:white}x#2#'
+                    ' per {C:attention}consecutively{} scored 8',
+                    '{C:inactive}currently {X:mult,C:white}X#2#'
                     },
                 },
             j_funmode_wing_ding = {
@@ -246,7 +260,15 @@ return {
                 text = {
                     '{X:mult,C:white}X#1#{} Mult',
                     '{f:funmode_wingdings}Sets font to wingdings',
-                    '{C:inactive}should set font to wingdings but currently does not work{}'
+                    '{C:inactive}this font ^ doesnt work{}'
+                    },
+                },
+            j_funmode_apartment_13 = {
+                name = 'Apartment 13',
+                text = {
+                    'At {C:attention}end of round',
+                    'creates {C:planet}Earth',
+                    '{C:blue}-#1#{} hand each round'
                     },
                 },
             },
@@ -263,11 +285,17 @@ return {
                         'set scored {C:chips}chips{} to 0'
                         }
                 },
+            bl_funmode_ink = {
+                name = 'The Ink',
+                text = {
+                        'changes boss blind',
+                        'each hand drawn'
+                        }
+                },
             },
         Enhanced = {
             m_funmode_copycard = {
                 name = "Copycard",
-                label = "Copycard",
                 text = {"copies other card's",
                         "{C:attention}rank{}, {C:attention}enhancement{} and {C:attention}seal{}",
                         "changes with copied card",
@@ -283,7 +311,6 @@ return {
         Edition = {
             e_funmode_monochrome = {
                 name = "Monochrome",
-                label = "Monochrome",
                 text = {
                     "balances chips and mult",
                     "keeping the score",
@@ -292,13 +319,44 @@ return {
             },
             e_funmode_copycard = {
                 name = "Copycard",
-                label = "Monochrome",
                 text = {"copies other card's",
                         "{C:attention}rank{}, {C:attention}enhancement{} and {C:attention}seal{}",
                         "changes with copied card",
-                        "{C:inactive,s:0.9}copies are always monochrome{}"}
-                },
+                        "{C:inactive,s:0.9}copies are always monochrome{}"
+                }
             },
+        },
+        Back = {
+             b_funmode_shark = {
+             name = 'Shark Deck',
+             text = {
+                'Doubles all {C:attention}listed',
+                '{C:green}probabilities',
+                '{C:blue}-1{} hand every round',
+                '{C:red}-1{} discard every round'
+                }
+            }
+        },
+        Voucher = {
+            v_funmode_color_theory = {
+                name = 'Color Theory',
+                text = {
+                '{C:edition}Polychrome{} and',
+                '{C:edition}Monochrome{} cards',
+                'appear {C:attention}#1#X{} more often'
+                }
+            }
+        }
+
+
+    },
+    misc = {
+        labels = {
+        funmode_monochrome = "Monochrome",
+        funmode_copycard = "Monochrome"
+        }
+
+
 
     }
 }
