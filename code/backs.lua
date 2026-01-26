@@ -6,7 +6,7 @@ SMODS.Atlas{
 }
 
 SMODS.Back {
-    key = "shark",
+    key = "sharp",
     atlas = 'backs',
     pos = {x = 0, y = 0},
     config = {discards = -1, hands = -1},

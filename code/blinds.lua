@@ -17,12 +17,15 @@ SMODS.Blind {
     calculate = function(self, blind, context)
         if not blind.disabled and G.GAME.chips ~= 0 then
             if context.press_play then
-                local scaling = math.max(G.GAME.chips / 16, 250)
+                local old_chips = G.GAME.chips
+                local scaling = G.GAME.chips > 0 and math.max(G.GAME.chips / 8, 250) or math.min(G.GAME.chips / 8, -250)
+                G.counter_debug = 0
                 for i = 1, 8 do
-                    if G.GAME.chips >= 0 and G.GAME.chips <= 500 then
+                    G.counter_debug = G.counter_debug + 1
+                    if G.GAME.chips >= -250 and G.GAME.chips <= 250 or i == 8 then
                         G.E_MANAGER:add_event(Event({
                                                     trigger = "ease",
-                                                    delay = 0.0,
+                                                    delay = 0.1,
                                                     ref_table = G.GAME,
                                                     ref_value = 'chips',
                                                     blockable = true,
@@ -36,14 +39,14 @@ SMODS.Blind {
                     else
                         G.E_MANAGER:add_event(Event({
                                                     trigger = "ease",
-                                                    delay = 0.0,
+                                                    delay = 0.1,
                                                     ref_table = G.GAME,
                                                     ref_value = 'chips',
                                                     blockable = true,
-                                                    ease_to = G.GAME.chips - scaling,
+                                                    ease_to = old_chips - scaling * i,
                                                     func = function()
                                                         play_sound('funmode_flesh_heal', 0.96 + math.random() * 0.08, 0.25)
-                                                        return G.GAME.chips
+                                                        return old_chips - scaling * i
                                                         end
                                                     }))
                         delay(0.2)

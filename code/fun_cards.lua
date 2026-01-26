@@ -22,7 +22,7 @@ SMODS.Atlas{
 SMODS.UndiscoveredSprite{
     key = 'FunCard',
     atlas = 'fun_cards',
-    pos = {x = 0, y = 2}
+    pos = {x = 0, y = 0}
 }
 
 
@@ -211,7 +211,7 @@ SMODS.Consumable{
     discovered = true,
     cost = 999,
     in_pool = function(self, args)
-        return args and args.source == "sho"
+        return args and args.source == "sho" and not G.GAME.won
         end,
     can_use = function(self, card)
         return card.sell_cost > 300
@@ -275,20 +275,16 @@ SMODS.Consumable{
                 if not _list[joker] then
                     if joker == 1 then
                         key = 'j_glass'
-                        name = "Canio At Home"
                     elseif joker == 2 then
                         key = 'j_photograph'
-                        name = "Triboulet At Home"
                     elseif joker == 3 then
                         key = 'j_burnt'
-                        name = "Yorick At Home"
                     elseif joker == 4 then
                         key = 'j_luchador'
-                        name = "Chikot At Home"
                     elseif joker == 5 then
                         key = 'j_cartomancer'
-                        name = "Perkeo At Home"
                         end
+                    name = localize(key, 'funmode_soul_at_home')
                     break
                     end
                 end
@@ -346,4 +342,79 @@ SMODS.Consumable{
         G.GAME.pseudorandom.seed = generate_starting_seed()
         save_run()
         end
+}
+
+SMODS.Consumable{
+    key = 'lock_in',
+    set = 'FunCard',
+    atlas = 'fun_cards',
+    pos = {x = 3, y = 2},
+    config = {extra = {select = 1}},
+    loc_vars = function(self, info_queue, center)
+        --info_queue[#info_queue + 1] = G.P_CENTERS.eternal --there is no stickers in P_CENTERS :(
+        return {vars = {center.ability.extra.select}}
+        end,
+    unlocked = true,
+    discovered = true,
+    cost = 6,
+    can_use = function(self, card)
+        return G.jokers and #G.jokers.highlighted ~= 0 and #G.jokers.highlighted <= card.ability.extra.select and
+        (function()
+            for _, c in ipairs(G.jokers.highlighted) do
+                if not c.ability.eternal then
+                    return true
+                    end
+                end
+            return false
+            end)()
+        end,
+    use = function(self, card, area, copier)
+        for _, c in ipairs(G.jokers.highlighted) do
+            c:add_sticker('eternal', true)
+            end
+        end
+}
+
+SMODS.Consumable{
+    key = 'wheel_of_unfortune',
+    set = 'FunCard',
+    atlas = 'fun_cards',
+    pos = {x = 3, y = 1},
+    config = {extra = {odds = 4, gain = 15}},
+    loc_vars = function(self, info_queue, card)
+        return {vars = {card.ability.extra.gain, G.GAME.probabilities.normal, card.ability.extra.odds}}
+    end,
+    unlocked = true,
+    discovered = true,
+    cost = 6,
+    can_use = function(self, card)
+        return next(SMODS.Edition:get_edition_cards(G.jokers))
+    end,
+    use = function(self, card, area, copier)
+        ease_dollars(card.ability.extra.gain)
+        if pseudorandom('funmode_wheel_of_fortune') < G.GAME.probabilities.normal / card.ability.extra.odds then
+            local edition_jokers = SMODS.Edition:get_edition_cards(G.jokers, false)
+            local _card = pseudorandom_element(edition_jokers, pseudoseed("funmode_wheel_of_unfortune"))
+            _card:set_edition()
+        else
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after',
+                delay = 0.4,
+                func = function()
+                    attention_text({
+                        text = 'safe',
+                        scale = 1.3,
+                        hold = 1.4,
+                        major = card,
+                        backdrop_colour = G.C.SECONDARY_SET.FunCard,
+                        align = (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) and 'tm' or 'cm',
+                        offset = {x = 0, y = (G.STATE == G.STATES.TAROT_PACK or G.STATE == G.STATES.SPECTRAL_PACK or G.STATE == G.STATES.SMODS_BOOSTER_OPENED) and -0.2 or 0},
+                        silent = true
+                    })
+                    card:juice_up(0.3, 0.5)
+                    return true
+                end
+            }))
+        end
+    end,
 }

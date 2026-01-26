@@ -88,3 +88,18 @@ function ink_boss_update()
         end
     ease_background_colour_blind{new_colour = lighten(mix_colours(boss_col. G.C.BLACK, 0.3), 0.1), special_colour = boss_col, contrast = 2}
     end
+
+
+-- custom challenge effects
+local start_run_ref = Game.start_run
+function Game:start_run(args)
+    ref = start_run_ref(self, args)
+	if G.GAME and args.challenge and args.challenge.rules and args.challenge.rules.custom then
+        for _, v in ipairs(args.challenge.rules.custom) do
+            if v.id == 'legendary_mod' then
+                G.P_CENTERS.c_soul = v.value
+                end
+            end
+        end
+    return ref
+    end

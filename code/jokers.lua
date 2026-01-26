@@ -129,18 +129,21 @@ SMODS.Joker{
         return {vars = {card.ability.extra.rounds_played, card.ability.extra.rounds_required}}
         end,
     calculate = function(self, card, context)
-            if context.end_of_round and context.cardarea == G.jokers then
-                card.ability.extra.rounds_played = card.ability.extra.rounds_played + 1
-                end
-            if context.selling_self then
-                if card.ability.extra.rounds_played >= card.ability.extra.rounds_required then
-                    local card = create_card("Joker", G.jokers, true, nil, nil, nil, nil)
-                    card:add_to_deck()
-                    G.jokers:emplace(card)
-                    card:start_materialize()
-                    end
+        if context.end_of_round and context.cardarea == G.jokers then
+            card.ability.extra.rounds_played = card.ability.extra.rounds_played + 1
+            if card.ability.extra.rounds_played >= card.ability.extra.rounds_required then
+                juice_card_until(card, function() return true end, true)
                 end
             end
+        if context.selling_self then
+            if card.ability.extra.rounds_played >= card.ability.extra.rounds_required then
+                local card = create_card("Joker", G.jokers, true, nil, nil, nil, nil)
+                card:add_to_deck()
+                G.jokers:emplace(card)
+                card:start_materialize()
+                end
+            end
+        end
 }
 
 SMODS.Joker{
@@ -155,6 +158,9 @@ SMODS.Joker{
     perishable_compat = true,
     pos = {x = 1, y = 4},
     pixel_size = {w = 42, h = 65},
+    in_pool = function(self, args)
+        return False
+        end,
     calculate = function(self, card, context)
         G.E_MANAGER:add_event(Event({
             trigger = 'after',
@@ -302,6 +308,13 @@ SMODS.Joker{ --really cool joker
                         axmult = axmult + selected.ability.extra.Xmult - 1
                     elseif type(selected.ability.extra) == "table" and selected.ability.extra.xmult ~= nil and selected.ability.extra.xmult > 1 then
                         axmult = axmult + selected.ability.extra.xmult - 1
+                    elseif (   selected.config.center.key == "blackboard" or selected.config.center.key == "baron"
+                            or selected.config.center.key == "photograph" or selected.config.center.key == "baseball"
+                            or selected.config.center.key == "ancient"    or selected.config.center.key == "acrobat"
+                            or selected.config.center.key == "flower_pot" or selected.config.center.key == "seeing_double")
+                            and type(selected.ability.extra) == "number" and selected.ability.extra > 1
+                    then
+                        axmult = axmult + selected.ability.extra - 1
                     end
 
                     selected.getting_sliced = true
@@ -347,14 +360,10 @@ SMODS.Joker{
     perishable_compat = true,
     allow_duplicates = true,
     pos = {x = 1, y = 2},
-    config = {extra = {x_mult = 1, sprite = -1, mult_scaling = 1}},
+    config = {extra = {xmult = 1, sprite = -1, mult_scaling = 0.5}},
     loc_vars = function(self, info_queue, card)
-        --crashes the game, potential todo?
-        --nah, stencil doesnt have that
-        --if info_queue[#info_queue] == G.P_CENTERS.j_funmode_twin then
-        --info_queue[#info_queue + 1] = G.P_CENTERS.j_funmode_twin
-        --end
-        return {vars = {math.max((#SMODS.find_card("j_funmode_twin", true) - 1) * card.ability.extra.mult_scaling + 1, 1), card.ability.extra.mult_scaling} }
+        card.ability.extra.xmult = math.max((#SMODS.find_card("j_funmode_twin", true)) * card.ability.extra.mult_scaling + 1, 1)
+        return {vars = {card.ability.extra.xmult, card.ability.extra.mult_scaling} }
         end,
     set_sprites = function(self, card, front)
         if front then
@@ -366,8 +375,9 @@ SMODS.Joker{
         end,
     calculate = function(self, card, context)
         if context.joker_main then
+                card.ability.extra.xmult = math.max((#SMODS.find_card("j_funmode_twin", true)) * card.ability.extra.mult_scaling + 1, 1)
                 return {
-                xmult = math.max((#SMODS.find_card("j_funmode_twin", true) - 1)  * card.ability.extra.mult_scaling + 1, 1)
+                xmult = card.ability.extra.xmult
                 }
             end
         end
@@ -1022,9 +1032,11 @@ SMODS.Joker{
         end,
     add_to_deck = function(self, card, from_debuff)
         G.GAME.round_resets.hands = G.GAME.round_resets.hands - card.ability.extra.hands
+        message = localize{type = 'variable', key = 'a_handsize_minus', vars = {card.ability.extra.hands}}
         end,
     remove_from_deck = function(self, card, from_debuff)
         G.GAME.round_resets.hands = G.GAME.round_resets.hands + card.ability.extra.hands
+        message = localize{type = 'variable', key = 'a_handsize', vars = {card.ability.extra.hands}}
         end,
     calculate = function(self, card, context)
         if context.end_of_round and context.cardarea == G.jokers then
@@ -1035,4 +1047,240 @@ SMODS.Joker{
                 end
             end
         end
+}
+
+SMODS.Joker{
+    key = 'doom',
+    atlas ='jokers',
+    rarity = 2,
+    cost = 7,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 5, y = 1},
+    config = {extra = {gain = 0.5}},
+    loc_vars = function(self, info_queue, center)
+        local xmult = (function() et = 0 if G.jokers then for _, c in ipairs(G.jokers.cards) do if c.ability.eternal then et = et + 1 end end end return et end)()
+        return {vars = {center.ability.extra.gain, xmult * center.ability.extra.gain + 1}}
+        end,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            local xmult = (function() et = 0 for _, c in ipairs(G.jokers.cards) do if c.ability.eternal then et = et + 1 end end return et end)()
+            return {xmult = xmult * card.ability.extra.gain + 1}
+            end
+        end
+}
+
+SMODS.Joker{
+    key = 'bread_pit',
+    atlas ='jokers',
+    rarity = 1,
+    cost = 4,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = false,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    config = {extra = {chips = 100, loss = 2}},
+    loc_vars = function(self, info_queue, center)
+        return {vars = {center.ability.extra.chips, center.ability.extra.loss}}
+        end,
+    calculate = function(self, card, context)
+        if context.individual and context.cardarea == G.play and not context.blueprint then
+            card.ability.extra.chips = card.ability.extra.chips - card.ability.extra.loss
+            end
+        if context.joker_main then
+            return {chips = card.ability.extra.chips}
+            end
+        if context.after and context.main_eval and not context.blueprint and
+            card.ability.extra.chips <= 0 then
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        play_sound('tarot1')
+                        card.T.r = -0.2
+                        card:juice_up(0.3, 0.4)
+                        card.states.drag.is = true
+                        card.children.center.pinch.x = true
+                        G.E_MANAGER:add_event(Event({
+                            trigger = 'after',
+                            delay = 0.3,
+                            blockable = false,
+                            func = function()
+                                card:remove()
+                                return true
+                            end
+                        }))
+                        return true
+                    end
+                }))
+            end
+        end
+}
+
+SMODS.Joker{
+    key = 'chips',
+    atlas ='jokers',
+    rarity = 2,
+    cost = 6,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = false,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    config = {extra = {chips = 200, loss = 8}},
+    loc_vars = function(self, info_queue, center)
+        return {vars = {center.ability.extra.chips, center.ability.extra.loss}}
+        end,
+    calculate = function(self, card, context)
+        if context.post_trigger then
+            card.ability.extra.chips = card.ability.extra.chips - card.ability.extra.loss
+            end
+        if context.joker_main then
+            return {chips = math.max(card.ability.extra.chips - 8, 0)}
+            end
+        if context.after and context.main_eval and not context.blueprint and
+            card.ability.extra.chips <= 0 then
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        play_sound('tarot1')
+                        card.T.r = -0.2
+                        card:juice_up(0.3, 0.4)
+                        card.states.drag.is = true
+                        card.children.center.pinch.x = true
+                        G.E_MANAGER:add_event(Event({
+                            trigger = 'after',
+                            delay = 0.3,
+                            blockable = false,
+                            func = function()
+                                card:remove()
+                                return true
+                            end
+                        }))
+                        return true
+                    end
+                }))
+            end
+        end
+}
+
+local function calculate_m()
+    local m = 0
+    local function count_m(ch)
+        if ch == localize('m', 'funmode_letter_m') or ch == localize('M', 'funmode_letter_m') or ch == 'm' or ch == 'M' then
+            m = m + 1
+            end
+        end
+    if G.jokers then
+        for _, c in ipairs(G.jokers.cards) do
+            name = c.ability and c.ability.funmode_extra and c.ability.funmode_extra.name
+                or localize{set = 'Joker', type = 'name', key = c.config.center.key}
+            if type(n) == 'string' then
+                name:gsub(".", count_m)
+            else
+                for _, n in ipairs(name) do
+                    if type(n) == 'string' then
+                        n:gsub(".", count_m)
+                    else
+                        n.nodes[1].nodes[1].config.object.string:gsub(".", count_m)
+                        end
+                    end
+                end
+            end
+        end
+    return m
+    end
+SMODS.Joker{
+    key = 'cry_joker', --cryptic joker
+    atlas ='jokers',
+    rarity = 1,
+    cost = 4,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    config = {extra = {gain = 5, mult = 0}},
+    loc_vars = function(self, info_queue, center)
+        center.ability.extra.mult = calculate_m() * center.ability.extra.gain
+        return {vars = {center.ability.extra.gain, center.ability.extra.mult}}
+        end,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            card.ability.extra.mult = calculate_m() * card.ability.extra.gain
+            return {mult = card.ability.extra.mult}
+            end
+        end
+}
+
+SMODS.Joker{
+    key = 'royal_dagger',
+    atlas ='jokers',
+    rarity = 2,
+    cost = 7,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = false,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    config = {extra = {}},
+    loc_vars = function(self, info_queue, center)
+        end,
+    calculate = function(self, card, context)
+        if context.setting_blind and not context.blueprint then
+            local my_pos = nil
+            for i = 1, #G.jokers.cards do
+                if G.jokers.cards[i] == card then
+                    my_pos = i
+                    break
+                    end
+                end
+            if my_pos and G.jokers.cards[my_pos + 1] and not G.jokers.cards[my_pos + 1].ability.eternal and not G.jokers.cards[my_pos + 1].getting_sliced then
+                local sliced_card = G.jokers.cards[my_pos + 1]
+                sliced_card.getting_sliced = true -- Make sure to do this on destruction effects
+                G.GAME.joker_buffer = G.GAME.joker_buffer - 1
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        G.GAME.joker_buffer = 0
+                        card.sell_cost = card.sell_cost + sliced_card.sell_cost
+                        card:juice_up(0.8, 0.8)
+                        sliced_card:start_dissolve({ HEX("57ecab") }, nil, 1.6)
+                        play_sound('slice1', 0.96 + math.random() * 0.08)
+                        return true
+                        end
+                }))
+                return {
+                    message = localize{type = 'variable', key = 'a_money', vars = {sliced_card.sell_cost}},
+                    colour = G.C.MONEY,
+                    no_juice = true
+                }
+                end
+            end
+        end
+}
+
+SMODS.Joker{
+    key = 'vip_ticket',
+    atlas ='jokers',
+    rarity = 2,
+    cost = 9,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = false,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 1},
+    config = {extra = {common_mod = 0}},
+    add_to_deck = function(self, card, from_debuff)
+        card.ability.extra.common_mod = G.GAME.common_mod
+        G.GAME.common_mod = 0
+        end,
+    remove_from_deck = function(self, card, from_debuff)
+        G.GAME.common_mod = card.ability.extra.common_mod
+        end,
 }

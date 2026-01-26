@@ -8,7 +8,7 @@ return {
             c_funmode_spectre = {
                 name = 'Spectre',
                 text = {
-                    'Convert up to #1# selected',
+                    'Convert up to {C:attention}#1#{} selected',
                     'cards to most used suit',
                     '{C:inactive}(currently: {V:1}#2#{C:inactive}){}'
                     }
@@ -28,7 +28,7 @@ return {
                 },
             c_funmode_color_wheel = {
                 name = 'Color Wheel',
-                text = {'Apply {C:edition}polychrome{} or {C:edition}monochrome',
+                text = {'Apply {C:dark_edition}polychrome{} or {C:dark_edition}monochrome',
                         'to random card held in hand'}
                 },
             c_funmode_phonewave = {
@@ -37,6 +37,17 @@ return {
                     'changes current {C:attention}seed',
                     '{C:inactive}previous seed: {C:attention}#1#'
                     }
+                },
+            c_funmode_lock_in = {
+                name = 'Lock In',
+                text = {'Choose {C:attention}#1#{} joker to apply',
+                        '{C:attention}eternal{} sticker to'}
+                },
+            c_funmode_wheel_of_unfortune = {
+                name = 'The Wheel Of Unfortune',
+                text = {'Gain {C:money}$#1#{}',
+                        '{C:green}#2# in #3#{} chance to remove',
+                        'random joker edition'}
                 },
             },
         Joker = {
@@ -68,7 +79,7 @@ return {
                 },
             },
             j_funmode_soul = {
-                name = 'Soul joker',
+                name = 'Soul Joker',
                 text = {
                     'After {C:attention}#2#{} rounds',
                     'sell this card to',
@@ -95,8 +106,8 @@ return {
             j_funmode_franziska_von_karma = {
                 name = 'Franziska Von Karma',
                 text = {
-                    'Creates {C:attention}The Fool{}',
-                    'when hand played',
+                    'Creates {C:attention}The Fool{} when',
+                    'hand played',
                     --'on {C:attention}first three{} hands of round',
                     'played {C:attention}face{} cards give',
                     '{X:mult,C:white} X#1# {} Mult when scored'
@@ -214,7 +225,7 @@ return {
             j_funmode_whiplash = {
                 name = 'Whiplash',
                 text = {
-                    'Choose {C:attention}one{} card',
+                    'Choose one card',
                     'that will be {C:attention}guaranteed{} to draw',
                     'current card: {V:1}#1#{} of {V:2}#2#',
                     '{C:inactive}does not work{}'
@@ -225,7 +236,8 @@ return {
                 text = {
                     'all played cards count as {C:attention}glass{}',
                     'When hand played',
-                    '{C:green}#1# in #2#{} chance to {C:red}destroy{} this joker'
+                    '{C:green}#1# in #2#{} chance to',
+                    '{C:red}destroy{} this joker'
                     },
                 },
             j_funmode_evil = {
@@ -234,24 +246,24 @@ return {
                     'When blind selected',
                     'gain {X:mult,C:white}X#1#{} Mult',
                     'if its the {C:attention}only joker',
-                    'currently {X:mult,C:white}X#2#'
+                    '{C:inactive}(currently {X:mult,C:white}X#2#{C:inactive})'
                     },
                 },
             j_funmode_insurance = {
                 name = 'Insurance',
                 text = {
                     'When blind selected',
-                    'lose {C:money}$#1#{}',
+                    '{C:red}lose {C:money}$#1#{}',
                     'at end of boss blind',
-                    'gain {C:money}$#2#{} for',
-                    'each debuffed card in deck'
+                    'gain {C:money}$#2#{} for each',
+                    '{C:red}debuffed{} card in deck'
                     },
                 },
             j_funmode_infini_eight = {
                 name = 'infini-eight',
                 text = {
-                    'gains {X:mult,C:white}x#1#{} mult',
-                    ' per {C:attention}consecutively{} scored 8',
+                    'gains {X:mult,C:white}X#1#{} mult',
+                    'per {C:attention}consecutively{} scored 8',
                     '{C:inactive}currently {X:mult,C:white}X#2#'
                     },
                 },
@@ -269,6 +281,53 @@ return {
                     'At {C:attention}end of round',
                     'creates {C:planet}Earth',
                     '{C:blue}-#1#{} hand each round'
+                    },
+                },
+            j_funmode_doom = {
+                name = 'Doom',
+                text = {
+                    '{C:white,X:mult}X#1#{} Mult',
+                    'for each {C:attention}eternal{} joker',
+                    '{C:inactive}(currently {C:white,X:mult}X#2#{C:inactive})'
+                    },
+                },
+            j_funmode_bread_pit = {
+                name = 'Bread Pit',
+                text = {
+                    '{C:blue}+#1#{} chips',
+                    '{C:blue}-#2#{} chip',
+                    'for each card scored'
+                    },
+                },
+            j_funmode_chips = {
+                name = 'Bag of Chips',
+                text = {
+                    '{C:blue}+#1#{} chips',
+                    '{C:blue}-#2#{} chips',
+                    'for each joker triggered'
+                    },
+                },
+            j_funmode_cry_joker = {
+                name = 'Cryptic Joker',
+                text = {
+                    '{C:mult}+#1#{} mult',
+                    'for each {C:attention}m{} in joker names',
+                    '{C:inactive}(currently {C:mult}+#2#{C:inactive})'
+                    },
+                },
+            j_funmode_royal_dagger = {
+                name = 'Royal Dagger',
+                text = {
+                    'When {C:attention}blind{} is selected',
+                    'destroy joker to the right',
+                    'and gain its sell value'
+                    },
+                },
+            j_funmode_vip_ticket = {
+                name = 'Vip Ticket',
+                text = {
+                    'Prevents {C:common}common{} jokers',
+                    'from appearing'
                     },
                 },
             },
@@ -314,7 +373,7 @@ return {
                 text = {
                     "balances chips and mult",
                     "keeping the score",
-                    "{C:inactive}(ex: {}{C:chips}100{}{C:inactive}x{}{C:mult}1{}{C:inactive} -> {}{C:chips}10{}{C:inactive}x{}{C:mult}10{}{C:inactive}){}"
+                    "{C:inactive}(ex: {}{C:white,X:chips}100{}{C:mult}x{}{C:white,X:mult}1{}{C:inactive} -> {}{C:white,X:chips}10{}{C:mult}x{}{C:white,X:mult}10{}{C:inactive}){}"
                 }
             },
             e_funmode_copycard = {
@@ -327,8 +386,8 @@ return {
             },
         },
         Back = {
-             b_funmode_shark = {
-             name = 'Shark Deck',
+             b_funmode_sharp = {
+             name = 'Sharp Deck',
              text = {
                 'Doubles all {C:attention}listed',
                 '{C:green}probabilities',
@@ -341,8 +400,8 @@ return {
             v_funmode_color_theory = {
                 name = 'Color Theory',
                 text = {
-                '{C:edition}Polychrome{} and',
-                '{C:edition}Monochrome{} cards',
+                '{C:dark_edition}Polychrome{} and',
+                '{C:dark_edition}Monochrome{} cards',
                 'appear {C:attention}#1#X{} more often'
                 }
             }
@@ -352,11 +411,26 @@ return {
     },
     misc = {
         labels = {
-        funmode_monochrome = "Monochrome",
-        funmode_copycard = "Monochrome"
+            funmode_monochrome = "Monochrome",
+            funmode_copycard = "Monochrome"
+        },
+        challenge_names = {
+            c_dark_souls = 'Dark Souls',
+                --text = {'{C:legendary}Soul{} always appears in booster packs'}
+        },
+        funmode_letter_m = {
+            m = 'm',
+            M = 'M'
+        },
+        funmode_soul_at_home = {
+            j_glass = "Canio At Home",
+            j_photograph = "Triboulet At Home",
+            j_burnt = "Yorick At Home",
+            j_luchador = "Chikot At Home",
+            j_cartomancer = "Perkeo At Home"
+        },
+        v_dictionary={
+            a_money = '+$#1#'
         }
-
-
-
     }
 }
