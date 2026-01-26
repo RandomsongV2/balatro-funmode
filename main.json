@@ -3,11 +3,11 @@
   "name": "Fun Mode",
   "display_name": "Fun Mode",
   "author": ["RandomsongV2"],
-  "description": "feel free to offer new ideas or art, bug reports are encouraged",
+  "description": "feel free to offer new ideas or art, bug reports are encouraged.   sometimes 2x graphics might not work because im not updating 2x textures that often",
   "prefix": "funmode",
   "main_file": "main.lua",
   "priority": 0,
   "badge_colour": "4f6367",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "dependencies": []
 }
