@@ -3,7 +3,7 @@ return {
         FunCard = {
             c_funmode_gamba = {
                 name = 'Gamba',
-                text = {'{C:green}#1# in 2{} chance to gain {C:money}$#2#{}'}
+                text = {'gain from {C:money}$#1#{} to {C:money}$#2#{}'}
                 },
             c_funmode_spectre = {
                 name = 'Spectre',
@@ -96,11 +96,10 @@ return {
             j_funmode_manfred_von_karma = {
                 name = 'Manfred Von Karma',
                 text = {
-                    'creates chosen joker',
-                    'until end of a round',
-                    'cant create same joker twice',
-                    'cant create legendary',
-                    '{C:inactive}does not work{}'
+                    '{s:0.9}at end of round creates',
+                    '{s:0.9,C:attention}selected joker{s:0.9} for one round',
+                    '{s:0.9}cant create same joker twice',
+                    '{s:0.9}cant create legendary jokers',
                 },
             },
             j_funmode_franziska_von_karma = {
@@ -117,8 +116,8 @@ return {
                 name = 'The Devouver Of Gods',
                 text = {
                     'when {C:attention}Blind{} is selected',
-                    '{C:red,E:2}destroy{} all jokers and gain',
-                    'their {C:chips}chips{}, {C:mult}mult{} and {X:mult,C:white}xmult{}',
+                    '{C:red,E:2}destroy{} all jokers and gain half',
+                    'of their {C:chips}chips{}, {C:mult}mult{} and {X:mult,C:white}xmult{}',
                     '{C:inactive}(currently {}{C:chips}+#1#{}{C:inactive} / {}{C:mult}+#2#{}{C:inactive} / {}{X:mult,C:white}X#3#{}{C:inactive}){}',
                 },
             },
@@ -219,7 +218,7 @@ return {
                 text = {
                     'When {C:attention}first hand of round{} drawn',
                     '{C:red}destroy{} #1# random cards',
-                    '{C:red}jokers and consumeables included'
+                    'jokers and consumeables {C:red}included'
                     },
                 },
             j_funmode_whiplash = {
@@ -253,7 +252,7 @@ return {
                 name = 'Insurance',
                 text = {
                     'When blind selected',
-                    '{C:red}lose {C:money}$#1#{}',
+                    'lose {C:money}$#1#{}',
                     'at end of boss blind',
                     'gain {C:money}$#2#{} for each',
                     '{C:red}debuffed{} card in deck'
@@ -295,7 +294,7 @@ return {
                 name = 'Bread Pit',
                 text = {
                     '{C:blue}+#1#{} chips',
-                    '{C:blue}-#2#{} chip',
+                    '{C:blue}-#2#{} chips',
                     'for each card scored'
                     },
                 },
@@ -328,6 +327,29 @@ return {
                 text = {
                     'Prevents {C:common}common{} jokers',
                     'from appearing'
+                    },
+                },
+            j_funmode_p2w = {
+                name = 'Pay To Win',
+                text = {
+                    '{C:white,X:mult}X#1#{} Mult',
+                    'when hand played',
+                    'uses money equal to',
+                    '{C:attention}xmult squared'
+                    },
+                },
+            j_funmode_trash = {
+                name = 'Trash Can',
+                text = {
+                    'Played and {C:attention}unscored{} cards',
+                    'count as discarded'
+                    },
+                },
+            j_funmode_bald = {
+                name = 'Bald Joker',
+                text = {
+                    'Retriggers all playing cards',
+                    'with {C:dark_edition}edition'
                     },
                 },
             },
@@ -405,18 +427,38 @@ return {
                 'appear {C:attention}#1#X{} more often'
                 }
             }
-        }
+        },
+        Other = {
+            funmode_fabricated_sticker = {
+                name = "Fabricated",
+                text = {
+                    'at {C:attention}end of round',
+                    'destroy this card'
+                },
+            },
+        },
 
 
     },
     misc = {
         labels = {
             funmode_monochrome = "Monochrome",
-            funmode_copycard = "Monochrome"
+            funmode_copycard = "Monochrome",
+            funmode_fabricated_sticker = "Fabricated"
         },
         challenge_names = {
-            c_dark_souls = 'Dark Souls',
-                --text = {'{C:legendary}Soul{} always appears in booster packs'}
+            c_funmode_dark_souls = 'Dark Souls (doesnt work rn)',
+            c_funmode_delivery_1 = 'Delivery',
+            c_funmode_delivery_2 = 'Delivery 2',
+            c_funmode_manfred_court = 'Manfred prime',
+        },
+        v_text = {
+            ch_c_funmode_ice_cream_delivery = {'lose run when {C:attention}Ice Cream{} gets destroyed'},
+            ch_c_funmode_legendary_always = {'{C:legendary}Soul{} always appears in booster packs'},
+            ch_c_gold_stake = {'Gold stake'}
+        },
+        v_dictionary = {
+            a_money = '+$#1#'
         },
         funmode_letter_m = {
             m = 'm',
@@ -429,8 +471,5 @@ return {
             j_luchador = "Chikot At Home",
             j_cartomancer = "Perkeo At Home"
         },
-        v_dictionary={
-            a_money = '+$#1#'
-        }
     }
 }

@@ -176,8 +176,7 @@ SMODS.Joker{
         end
 }
 
---todo
-SMODS.Joker{
+SMODS.Joker{ -- oh wow i actually did it
     key = 'manfred_von_karma',
     atlas ='jokers',
     rarity = 4,
@@ -189,20 +188,20 @@ SMODS.Joker{
     perishable_compat = true,
     pos = {x = 3, y = 3},
     soul_pos = {x = 4, y = 3},
-    in_pool = function(self, args)
-        return False
-        end,
+    config = {extra = {used = {}}},
     calculate = function(self, card, context)
-            if context.end_of_round and context.cardarea == G.jokers then
-                menu = function()
-                    return {n = G.UIT.ROOT, config = {align = 'cm'}, nodes{
-                        {n = G.UIT.T, config = {text = 'aaa', colour = G.C.UI.TEXT_LIGHT, scalr = 0.5}}}}
-                end
-                local ui = UIBox({
-                    definition = menu(),
-                    config = {type = 'cm'}})
-                end
-            end
+        if context.end_of_round and context.cardarea == G.jokers and not context.blueprint then
+            G.E_MANAGER:add_event(Event({
+                trigger = 'before',
+                delay = 0.4,
+                func = function()
+                    -- implementation is in ui.lua
+                    G.FUNCS.funmode_manfred_use_init(card)
+                    return true
+                    end
+            }))
+        end
+    end
 }
 
 SMODS.Joker{
@@ -330,9 +329,9 @@ SMODS.Joker{ --really cool joker
                     }))
                     end
                 end
-            card.ability.extra.chips = card.ability.extra.chips + achips
-            card.ability.extra.mult = card.ability.extra.mult + amult
-            card.ability.extra.Xmult = card.ability.extra.Xmult + axmult
+            card.ability.extra.chips = card.ability.extra.chips + floor(achips/2)
+            card.ability.extra.mult = card.ability.extra.mult + floor(amult/2)
+            card.ability.extra.Xmult = card.ability.extra.Xmult + axmult/2
                 return {
                     card:juice_up(0.8, 0.8),
                     no_juice = true
@@ -438,15 +437,15 @@ SMODS.Joker{
         return {vars = {colours = {HEX('008ee6')}}}
         end,
     calculate = function(self, card, context)
-        if context.destroy_card and context.cardarea == G.play and G.play.cards ~= nil then
-            cards_played = #G.play.cards
+        if context.press_play and #G.hand.highlighted ~= 0 then
+            cards_played = #G.hand.highlighted
             local mid = (cards_played - (cards_played % 2)) / 2 + cards_played % 2
-            local selected = G.play.cards[mid]
+            local selected = G.hand.highlighted[mid]
             if not selected:is_suit("Clubs") then
                 selected:start_dissolve({HEX("57ecab")}, nil, 1.6)
                 play_sound('funmode_parry', 0.96 + math.random() * 0.08, 0.25)
             elseif cards_played % 2 == 0 then
-                selected = G.play.cards[mid + 1]
+                selected = G.hand.highlighted[mid + 1]
                 if not selected:is_suit("Clubs") then
                     selected:start_dissolve({HEX("57ecab")}, nil, 1.6)
                     play_sound('funmode_parry', 0.96 + math.random() * 0.08, 0.25)
@@ -575,7 +574,7 @@ SMODS.Joker{
             local increase = true
             local play_more_than = (G.GAME.hands[hand_discarded].played or 0)
             for k, v in pairs(G.GAME.hands) do
-                if k ~= hand_discarded and v.played >= play_more_than and v.visible then
+                if k ~= hand_discarded and v.played > play_more_than and v.visible then
                     increase = false
                     break
                     end
@@ -586,6 +585,9 @@ SMODS.Joker{
                     message = localize{type = 'variable', key = 'a_xmult', vars = {card.ability.extra.xmult}}
                 }
                 end
+            end
+        if context.joker_main then
+            return card.ability.extra.xmult
             end
         end
 }
@@ -777,6 +779,9 @@ SMODS.Joker{
     blueprint_compat = true,
     eternal_compat = true,
     perishable_compat = true,
+    in_pool = function(self, args)
+        return G.GAME.consumeable_usage and G.GAME.consumeable_usage.c_aura and G.GAME.consumeable_usage.c_aura.count > 0
+        end,
     calculate = function(self, card, context)
         if context.joker_main then
             return {Xmult = 1 + card.ability.extra.scaling * (G.GAME.consumeable_usage and G.GAME.consumeable_usage.c_aura and G.GAME.consumeable_usage.c_aura.count or 0)}
@@ -816,7 +821,10 @@ SMODS.Joker {
                     delay = 0.3,
                     func = function()
                         card:juice_up(0.8, 0.8)
-                        select1:start_dissolve({ HEX("57ecab") }, nil, 1.0)
+                        selected1:juice_up(0.8, 0.8)
+                        if not select1.ability.eternal then
+                            select1:start_dissolve({ HEX("57ecab") }, nil, 1.0)
+                            end
                         play_sound('slice1', 0.96 + math.random() * 0.08)
                         return true
                         end
@@ -992,6 +1000,7 @@ SMODS.Joker{
         end
 }
 
+-- font changing is in hooks.lua
 SMODS.Joker{
     key = 'wing_ding',
     config = {extra = {xmult = 2}},
@@ -1120,6 +1129,7 @@ SMODS.Joker{
         end
 }
 
+-- bag of chips
 SMODS.Joker{
     key = 'chips',
     atlas ='jokers',
@@ -1131,7 +1141,7 @@ SMODS.Joker{
     eternal_compat = false,
     perishable_compat = true,
     pos = {x = 0, y = 0},
-    config = {extra = {chips = 200, loss = 8}},
+    config = {extra = {chips = 200, loss = 12}},
     loc_vars = function(self, info_queue, center)
         return {vars = {center.ability.extra.chips, center.ability.extra.loss}}
         end,
@@ -1283,4 +1293,80 @@ SMODS.Joker{
     remove_from_deck = function(self, card, from_debuff)
         G.GAME.common_mod = card.ability.extra.common_mod
         end,
+}
+
+SMODS.Joker{
+    key = 'p2w',
+    atlas ='jokers',
+    rarity = 2,
+    cost = 6,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = false,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    config = {extra = {xmult = 1}},
+    in_pool = function(self, args)
+        return false --todo
+        end,
+    loc_vars = function(self, info_queue, center)
+        return {vars = {center.ability.extra.xmult}}
+        end,
+    calculate = function(self, card, context)
+        end
+}
+
+SMODS.Joker{
+    key = 'trash',
+    atlas ='jokers',
+    rarity = 2,
+    cost = 6,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = false,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 5, y = 3},
+    calculate = function(self, card, context)
+        if context.before and not context.blueprint then
+            local unscored = {}
+            local counter = 1
+            for _, c in ipairs(context.full_hand) do
+                if not SMODS.in_scoring(c, context.scoring_hand) then
+                    unscored[counter] = c
+                    counter = counter + 1
+                    end
+                end
+            if unscored ~= {} then
+                old_highlighted = G.hand.highlighted
+                G.hand.highlighted = unscored
+                SMODS.calculate_context({pre_discard = true, full_hand = unscored})
+                for _, c in ipairs(unscored) do
+                    SMODS.calculate_context({discard = true, other_card = c, full_hand = unscored})
+                    end
+                G.GAME.current_round.discards_used = G.GAME.current_round.discards_used + 1
+                G.hand.highlighted = old_highlighted
+                end
+            end
+        end
+}
+
+SMODS.Joker{
+    key = 'bald', --i wanted to retrigger all edition effects but i dont know how
+    atlas ='jokers',
+    rarity = 2,
+    cost = 6,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = false,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 5, y = 4},
+    config = {extra = {repetitions = 1}},
+    calculate = function(self, card, context)
+        if context.repetition and (context.cardarea == G.play or context.cardarea == G.hand) and context.other_card:get_edition() then
+            return {repetitions = card.ability.extra.repetitions}
+            end
+        end
 }

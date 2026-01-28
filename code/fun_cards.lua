@@ -34,21 +34,19 @@ SMODS.Consumable{
     set = 'FunCard',
     atlas = 'fun_cards',
     pos = {x = 0, y = 2},
-    config = {money = 10},
+    config = {extra = {min = 1, max = 20}},
     unlocked = true,
     discovered = true,
-    cost = 4,
+    cost = 5,
     loc_vars = function(self, info_queue, center)
-        return {vars = {G.GAME.probabilities.normal, center.ability.money}}
-    end,
+        return {vars = {center.ability.extra.min, center.ability.extra.max}}
+        end,
     can_use = function(self, card)
         return true
-    end,
+        end,
     use = function(self, card, area, copier)
-        if pseudorandom('c_gamba') < G.GAME.probabilities.normal/2 then
-            ease_dollars(card.ability.money, true)
+        ease_dollars(pseudorandom('c_gamba', card.ability.extra.min, card.ability.extra.max))
         end
-    end
 }
 
 SMODS.Consumable{
@@ -56,7 +54,7 @@ SMODS.Consumable{
     set = 'FunCard',
     atlas = 'fun_cards',
     pos = {x = 1, y = 0},
-    config = {extra = {max_highlighted = 3}},
+    config = {extra = {max_highlighted = 4}},
     unlocked = true,
     discovered = true,
     cost = 4,

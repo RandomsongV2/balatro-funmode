@@ -8,6 +8,6 @@
   "main_file": "main.lua",
   "priority": 0,
   "badge_colour": "4f6367",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "dependencies": []
 }

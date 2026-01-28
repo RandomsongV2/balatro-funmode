@@ -51,7 +51,7 @@ local function safe_get(table, args)
 local generate_card_ui_ref = generate_card_ui
 function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end, card)
     local full_UI_table = generate_card_ui_ref(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end, card)
-    if safe_get(card, 'ability', 'funmode_extra', 'name') and card.ability.funmode_extra and type(full_UI_table.name) == "table"
+    if card and card.ability and card.ability.funmode_extra and card.ability.funmode_extra.name and type(full_UI_table.name) == "table"
         and safe_get(full_UI_table, 'name', 1, 'nodes', 1, 'nodes', 1, 'config', 'object', 'config') and full_UI_table.name[1].nodes
     then
         local conf = full_UI_table.name[1].nodes[1].nodes[1].config.object.config
@@ -95,11 +95,25 @@ local start_run_ref = Game.start_run
 function Game:start_run(args)
     ref = start_run_ref(self, args)
 	if G.GAME and args.challenge and args.challenge.rules and args.challenge.rules.custom then
-        for _, v in ipairs(args.challenge.rules.custom) do
-            if v.id == 'legendary_mod' then
-                G.P_CENTERS.c_soul = v.value
-                end
+        if args.challenge.rules.custom.funmode_legendary_always then
+            G.GAME.legendary_mod = math.huge --this doesnt work, todo
+            end
+        if args.challenge.rules.custom.gold_stake then
+            --todo
             end
         end
     return ref
+    end
+
+-- delivery challenge
+G.debug = {}
+local remove_ref = Card.remove
+function Card:remove(args)
+    G.debug.card = self
+	if self.config and self.config.center and self.config.center.key == 'j_ice_cream' and self.area == G.jokers and G.GAME.modifiers and G.GAME.modifiers.funmode_ice_cream_delivery then
+        G.STATE = G.STATES.GAME_OVER
+        G.FILE_HANDLER.force = true
+        G.STATE_COMPLETE = false
+        end
+    return remove_ref(self, args)
     end

@@ -8,8 +8,15 @@ SMODS.current_mod.optional_features = {
     }
 }
 
+Funmode = {}
+Funmode.ui = {}
+Funmode.ui.FUNMODE_COLLECTION_JOKERS = {}
+Funmode.manfred_card = {}
+Funmode.using_manfred = 0
+
 SMODS.current_mod.reset_game_globals = function(run_start)
     if run_start then
         G.GAME.funmode = {}
+        G.GAME.funmode.manfred = {}
         end
     end
