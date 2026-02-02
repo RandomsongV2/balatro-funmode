@@ -1,0 +1,47 @@
+[manifest] # Header for the file, this should only be here once at the beginning
+version = "0.1.0"
+priority = 0 # Priority for loading the file
+
+
+# to count negative aces as ace cards
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = '''if v.base.value and not v_nr and not SMODS.Ranks[v.base.value].face and card_id ~= 14 then'''
+position = "at"
+payload = '''if v.base.value and not v_nr and not SMODS.Ranks[v.base.value].face and card_id ~= 14 and card_id ~= 30 then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = '''if v.base.value and not SMODS.Ranks[v.base.value].face and card_id ~= 14 then'''
+position = "at"
+payload = '''if v.base.value and not SMODS.Ranks[v.base.value].face and card_id ~= 14 and card_id ~= 30 then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = '''if card_id == 14 then'''
+position = "at"
+payload = '''if card_id == 14 or card_id == 30 then'''
+match_indent = true
+
+
+# to not show ranks that deck doesn't have
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = '''if rank_tallies[rank_name_mapping[i]] ~= 0 or SMODS.add_to_pool(SMODS.Ranks[rank_name_mapping[i]], {suit=''}) then'''
+position = "at"
+payload = '''if rank_tallies[rank_name_mapping[i]] ~= 0 then'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = '''if count == 0 and SMODS.Ranks[rank].in_pool and not SMODS.add_to_pool(SMODS.Ranks[rank], {suit=''}) then'''
+position = "at"
+payload = '''if count == 0 then'''
+match_indent = true

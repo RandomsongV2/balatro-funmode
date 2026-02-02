@@ -61,13 +61,8 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
             full_UI_table.name[1].nodes[1].nodes[1].config.object = DynaText(conf)
             end
         end
-    return full_UI_table
-    end
 
 --wingings font change
-local generate_card_ui_ref = generate_card_ui
-function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end, card)
-    local full_UI_table = generate_card_ui_ref(_c, full_UI_table, specific_vars, card_type, badges, hide_desc, main_start, main_end, card)
     if #SMODS.find_card('j_funmode_wing_ding') > 0 and full_UI_table.main and type(full_UI_table.main) == "table" then
         for line = 1, #full_UI_table.main do
             if #full_UI_table.main[line] > 0 then
@@ -77,39 +72,51 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
                 end
             end
         end
+
     return full_UI_table
     end
-
---the ink
-function ink_boss_update()
-    target_blind = SMODS.Blinds.bl_funmode_ink --todo randomize
-    for key, _ in ipairs(target_blind) do
-        G.GAME.blind[key] = target_blind[key]
-        end
-    ease_background_colour_blind{new_colour = lighten(mix_colours(boss_col. G.C.BLACK, 0.3), 0.1), special_colour = boss_col, contrast = 2}
-    end
-
 
 -- custom challenge effects
 local start_run_ref = Game.start_run
 function Game:start_run(args)
     ref = start_run_ref(self, args)
 	if G.GAME and args.challenge and args.challenge.rules and args.challenge.rules.custom then
-        if args.challenge.rules.custom.funmode_legendary_always then
-            G.GAME.legendary_mod = math.huge --this doesnt work, todo
-            end
-        if args.challenge.rules.custom.gold_stake then
-            --todo
+        Funmode.debug = args.challenge.rules.custom
+        for i, r in ipairs(args.challenge.rules.custom) do
+            if r.id == 'funmode_legendary_always' then
+                SMODS.Booster:take_ownership_by_kind('Arcana', {
+                        create_card = function(self, card, i)
+                            local _card
+                            if i == 1 then
+                                _card = {
+                                    set = "Spectral",
+                                    area = G.pack_cards,
+                                    skip_materialize = true,
+                                    soulable = false,
+                                    key = "c_soul",
+                                    --key_append = "pl1"
+                                }
+                            else
+                                _card = { set = "Tarot", area = G.pack_cards, skip_materialize = true, soulable = true, --key_append = "pl1"
+                                }
+                            end
+                            return _card
+                        end,
+                        loc_vars = pack_loc_vars,
+                    },
+                    true
+                )
+            elseif r.id == 'gold_stake' then
+                --todo
+                end
             end
         end
     return ref
     end
 
 -- delivery challenge
-G.debug = {}
 local remove_ref = Card.remove
 function Card:remove(args)
-    G.debug.card = self
 	if self.config and self.config.center and self.config.center.key == 'j_ice_cream' and self.area == G.jokers and G.GAME.modifiers and G.GAME.modifiers.funmode_ice_cream_delivery then
         G.STATE = G.STATES.GAME_OVER
         G.FILE_HANDLER.force = true
@@ -117,3 +124,21 @@ function Card:remove(args)
         end
     return remove_ref(self, args)
     end
+
+local start_materialize_ref = Card.start_materialize
+function Card:start_materialize(dissolve_colours, silent, timefac)
+    if self.ability.set == 'elements' then
+        self:set_edition('e_funmode_element', true, true)
+        end
+    return start_materialize_ref(self, dissolve_colours, silent, timefac)
+    end
+
+-- todo
+--the ink
+--function ink_boss_update()
+--    target_blind = SMODS.Blinds.bl_funmode_ink
+--    for key, _ in ipairs(target_blind) do
+--        G.GAME.blind[key] = target_blind[key]
+--        end
+--    ease_background_colour_blind{new_colour = lighten(mix_colours(boss_col. G.C.BLACK, 0.3), 0.1), special_colour = boss_col, contrast = 2}
+--    end

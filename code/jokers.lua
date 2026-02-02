@@ -188,9 +188,9 @@ SMODS.Joker{ -- oh wow i actually did it
     perishable_compat = true,
     pos = {x = 3, y = 3},
     soul_pos = {x = 4, y = 3},
-    config = {extra = {used = {}}},
+    config = {extra = {used = {}, used2 = false}},
     calculate = function(self, card, context)
-        if context.end_of_round and context.cardarea == G.jokers and not context.blueprint then
+        if context.end_of_round and context.cardarea == G.jokers and not context.blueprint and not card.ability.extra.used2 then
             G.E_MANAGER:add_event(Event({
                 trigger = 'before',
                 delay = 0.4,
@@ -200,6 +200,9 @@ SMODS.Joker{ -- oh wow i actually did it
                     return true
                     end
             }))
+        end
+        if context.starting_shop then
+            card.ability.extra.used2 = false
         end
     end
 }
@@ -837,12 +840,13 @@ SMODS.Joker {
 
 SMODS.Joker{
     key = 'whiplash',
-    config = {extra = {selected_card = nil}},
+    config = {extra = {card = nil}},
     loc_vars = function(self, info_queue, center)
-        if selected_card then
-            return {vars = {localize(selected_card.config.card.value, 'ranks'), localize(selected_card.config.card.suit, 'suits_plural'), colours = {G.C.FILTER, G.C.SUITS[selected_card.config.card.suit]}}}
+        if center.ability.extra.card then
+            card_center = center.ability.extra.card.config.card
+            return {vars = {localize(card_center.value, 'ranks'), localize(card_center.suit, 'suits_plural'), colours = {G.C.SUITS[card_center.suit]}}}
             end
-        return {vars = {'None', 'None', colours = {G.C.UI.TEXT_INACTIVE, G.C.UI.TEXT_INACTIVE}}}
+        return {vars = {'None', 'None', colours = {G.C.UI.TEXT_INACTIVE}}}
         end,
     atlas = 'jokers',
     rarity = 3,
@@ -861,15 +865,14 @@ SMODS.Joker{
         use = function(card)
             G.E_MANAGER:add_event(Event({
                 func = function()
-                    G.funmode.whiplash = true
-                    G.FUNCS.overlay_menu({definition = G.UIDEF.deck_info(true)})
+                    G.FUNCS.funmode_whiplash_init(card)
                     return true
                 end
             }))
             end
     },
-    in_pool = function(self, args)
-        return False
+    in_pool = function(args)
+        return false
         end,
     calculate = function(self, card, context)
         end

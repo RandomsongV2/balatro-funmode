@@ -89,5 +89,4 @@ SMODS.Blind {
     set_blind = function(self)
         G.GAME.funmode.ink_boss = true
         end
-    --implemented in hooks.lua
 }

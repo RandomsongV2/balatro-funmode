@@ -1,5 +1,5 @@
 SMODS.Sticker {
-    key = "fabricated_sticker",
+    key = "true_perishable",
     badge_colour = HEX 'aaaaaa',
     pos = {x = -1, y = -1},
     no_collection = true,
@@ -13,7 +13,7 @@ SMODS.Sticker {
     end,
     calculate = function(self, card, context)
         if context.end_of_round then
-            if card.ability.hands_played_at_create ~= G.GAME.hands_played then
+            if not (card.ability.hands_played_at_create == G.GAME.hands_played and card.area == G.jokers) and not card.ability.eternal then
                 card:start_dissolve({HEX("aaaaaa")}, nil, 1.6)
                 end
             end

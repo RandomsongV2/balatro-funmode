@@ -21,14 +21,13 @@ SMODS.Edition {
         if context.main_scoring and context.cardarea == G.play then
             return {
             func = function()
-                hand_chips, mult = mod_chips(math.ceil(math.sqrt(hand_chips * mult))), mod_mult(math.floor(math.sqrt(hand_chips * mult)))
+                hand_chips, mult = mod_chips(math.ceil(math.sqrt(hand_chips * mult))), mod_mult(math.ceil(math.sqrt(hand_chips * mult)))
                 update_hand_text({sound = 'button', modded = true}, {chips = chips, mult = mult})
                 return true
                 end,
             message = 'Balanced'
             }
             end
-
         end
 }
 
@@ -91,7 +90,7 @@ SMODS.Edition {
         if context.main_scoring and context.cardarea == G.play then
             return {
             func = function()
-                hand_chips, mult = mod_chips(math.ceil(math.sqrt(hand_chips * mult))), mod_mult(math.floor(math.sqrt(hand_chips * mult)))
+                hand_chips, mult = mod_chips(math.ceil(math.sqrt(hand_chips * mult))), mod_mult(math.ceil(math.sqrt(hand_chips * mult)))
                 update_hand_text({sound = 'button', modded = true}, {chips = chips, mult = mult})
                 return true
                 end,
@@ -262,4 +261,17 @@ SMODS.DrawStep{
             card.children.back:draw_shader('funmode_monochrome', nil, card.ARGS.send_to_shader)
             end
         end
+}
+
+
+SMODS.Edition {
+    key = "element",
+    discovered = true,
+    unlocked = true,
+    shader = false,
+    config = {card_limit = 1},
+    in_shop = false,
+    no_collection = true,
+    weight = 0,
+    extra_cost = 0,
 }

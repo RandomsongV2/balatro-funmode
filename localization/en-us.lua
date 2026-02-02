@@ -38,16 +38,123 @@ return {
                     '{C:inactive}previous seed: {C:attention}#1#'
                     }
                 },
-            c_funmode_lock_in = {
-                name = 'Lock In',
-                text = {'Choose {C:attention}#1#{} joker to apply',
-                        '{C:attention}eternal{} sticker to'}
+            c_funmode_weakness = {
+                name = 'Weakness',
+                text = {
+                    "Decreases rank of",
+                    "up to {C:attention}#1#{} selected",
+                    "cards by {C:attention}1",
+                    },
                 },
-            c_funmode_wheel_of_unfortune = {
-                name = 'The Wheel Of Unfortune',
-                text = {'Gain {C:money}$#1#{}',
-                        '{C:green}#2# in #3#{} chance to remove',
-                        'random joker edition'}
+            },
+        elements = {
+            c_funmode_water = {
+                name = 'Water',
+                text = {
+                    'Does nothing',
+                    'alchemy component'
+                        }
+                },
+            c_funmode_acid = {
+                name = 'Acid',
+                text = {
+                    'Destroy {C:attention}#1#{} cards',
+                    'held in hand',
+                        }
+                },
+            c_funmode_teleportatium = {
+                name = 'Teleportatium',
+                text = {
+                     'Shuffle up to {C:attention}#1#{} selected card',
+                     'to deck and draw new cards',
+                     'from {C:attention}deck{}'
+                        }
+                },
+            c_funmode_teleportatium_unstable = {
+                name = 'Unstable Teleportatium',
+                text = {
+                     'Shuffle {C:attention}#1#{} cards held in hand',
+                     'to deck and draw new cards',
+                     'from {C:attention}deck{} or {C:attention}discard{} pile'
+                        }
+                },
+            c_funmode_midas = {
+                name = 'Midas',
+                text = {
+                     'Turn all cards in hand',
+                     'into {C:attention}Gold{} cards'
+                        }
+                },
+            c_funmode_poly = {
+                name = 'Polymorphine',
+                text = {
+                     'Remove {C:attention}enhancements',
+                     '{C:attention}seals{} and {C:attention}editions{} from',
+                     'up to {C:attention}#1#{} selected cards',
+                     'randomize {C:attention}rank{} and {C:attention}suit'
+                        }
+                },
+            c_funmode_poly_u = {
+                name = 'Unstable Polymorphine',
+                text = {
+                     'Remove {C:attention}enhancements',
+                     '{C:attention}seals{} and {C:attention}editions{} from',
+                     'all cards held in hand',
+                     'randomize {C:attention}rank{} and {C:attention}suit'
+                        }
+                },
+            c_funmode_poly_c = {
+                name = 'Chaotic Polymorphine',
+                text = {
+                     'Randomize {C:attention}rank{}, {C:attention}suit',
+                     '{C:attention}enhancement{}, {C:attention}seal{} and {C:attention}edition',
+                     'of up to #1# selected cards',
+                     'cannot set {C:dark_edition}negative'
+                        }
+                },
+            c_funmode_purifying = {
+                name = 'Purifying Powder',
+                text = {
+                     'Remove {C:attention}all{} modifications',
+                     'of up to #1# selected cards'
+                        }
+                },
+            c_funmode_toxic = {
+                name = 'Toxic Sludge',
+                text = {
+                     'Add {C:attention}true perishable{} sticker',
+                     'to up to #1# selected cards'
+                        }
+                },
+            c_funmode_flummoxium = {
+                name = 'Flummoxium',
+                text = {
+                     'inverts {C:chips}chips{} and {C:mult}mult',
+                     'values of up to #1#',
+                     'selected cards'
+                        }
+                },
+            c_funmode_pheromone = {
+                name = 'Pheromone',
+                text = {
+                     'Disables current {C:attention}boss blind'
+                        }
+                },
+            c_funmode_berserkium = {
+                name = 'Berserkium',
+                text = {
+                     'Add berserk sticker to', -- retrigger this card for next 3 hands played
+                     'up to #1# selected cards'
+                        }
+                },
+            c_funmode_lava = {
+                name = 'Lava',
+                text = {
+                    'select 1 card',
+                    'destroy it and',
+                    'split its chips',
+                    'and mult to near cards'
+                        }
                 },
             },
         Joker = {
@@ -226,8 +333,7 @@ return {
                 text = {
                     'Choose one card',
                     'that will be {C:attention}guaranteed{} to draw',
-                    'current card: {V:1}#1#{} of {V:2}#2#',
-                    '{C:inactive}does not work{}'
+                    'current card: {V:1}#1#{} of {V:1}#2#'
                     },
                 },
             j_funmode_glass_cannon = {
@@ -360,14 +466,14 @@ return {
                 'into {C:attention}observed{} cards'}
                 },
             bl_funmode_flesh_prison = {
-                name = 'Flesh Prison',
+                name = 'The Prison',
                 text = {
                         'when hand played',
                         'set scored {C:chips}chips{} to 0'
                         }
                 },
             bl_funmode_ink = {
-                name = 'The Ink',
+                name = 'Rainbow Ink',
                 text = {
                         'changes boss blind',
                         'each hand drawn'
@@ -406,6 +512,14 @@ return {
                         "{C:inactive,s:0.9}copies are always monochrome{}"
                 }
             },
+            e_funmode_element = {
+                name = "Element",
+                text = {
+                    "takes no space",
+                    "some elements will",
+                    "combine into other"
+                    }
+            },
         },
         Back = {
              b_funmode_sharp = {
@@ -420,7 +534,15 @@ return {
         },
         Voucher = {
             v_funmode_color_theory = {
-                name = 'Color Theory',
+                name = 'Colour Theory',
+                text = {
+                '{C:dark_edition}Polychrome{} and',
+                '{C:dark_edition}Monochrome{} cards',
+                'appear {C:attention}#1#X{} more often'
+                }
+            },
+            v_funmode_color_theory_2 = {
+                name = 'Colourer Theory',
                 text = {
                 '{C:dark_edition}Polychrome{} and',
                 '{C:dark_edition}Monochrome{} cards',
@@ -429,8 +551,8 @@ return {
             }
         },
         Other = {
-            funmode_fabricated_sticker = {
-                name = "Fabricated",
+            funmode_true_perishable = {
+                name = "True Perishable",
                 text = {
                     'at {C:attention}end of round',
                     'destroy this card'
@@ -441,24 +563,55 @@ return {
 
     },
     misc = {
+        achievement_names = {
+            ach_funmode_negative_rank = '',
+            },
+        achievement_descriptions = {
+            ach_funmode_negative_rank = 'Obtain weakest card',
+            },
         labels = {
             funmode_monochrome = "Monochrome",
             funmode_copycard = "Monochrome",
-            funmode_fabricated_sticker = "Fabricated"
+            funmode_true_perishable = "Perishable",
+            funmode_element = "Element",
         },
         challenge_names = {
-            c_funmode_dark_souls = 'Dark Souls (doesnt work rn)',
+            c_funmode_dark_souls = 'Dark Souls',
             c_funmode_delivery_1 = 'Delivery',
             c_funmode_delivery_2 = 'Delivery 2',
             c_funmode_manfred_court = 'Manfred prime',
         },
         v_text = {
             ch_c_funmode_ice_cream_delivery = {'lose run when {C:attention}Ice Cream{} gets destroyed'},
-            ch_c_funmode_legendary_always = {'{C:legendary}Soul{} always appears in booster packs'},
+            ch_c_funmode_legendary_always = {'{C:legendary}Soul{} always appears in arcana packs'},
             ch_c_gold_stake = {'Gold stake'}
         },
         v_dictionary = {
             a_money = '+$#1#'
+        },
+        poker_hands = {
+            funmode_lone_face = "Lone Face"
+        },
+		poker_hand_descriptions = {
+            funmode_lone_face = {"high card with 5 face cards"}
+        },
+        ranks = {
+            ['funmode_1'] = "1",
+            ['funmode_0'] = "0",
+            ['funmode_-1'] = "-1",
+            ['funmode_-2'] = "-2",
+            ['funmode_-3'] = "-3",
+            ['funmode_-4'] = "-4",
+            ['funmode_-5'] = "-5",
+            ['funmode_-6'] = "-6",
+            ['funmode_-7'] = "-7",
+            ['funmode_-8'] = "-8",
+            ['funmode_-9'] = "-9",
+            ['funmode_-10'] = "-10",
+            ['funmode_-Jack'] = "-Jack",
+            ['funmode_-Queen'] = "-Queen",
+            ['funmode_-King'] = "-King",
+            ['funmode_-Ace'] = "-Ace",
         },
         funmode_letter_m = {
             m = 'm',

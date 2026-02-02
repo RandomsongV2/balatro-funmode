@@ -175,6 +175,7 @@ end
 G.FUNCS.close_funmode_collection_jokers = function()
     if Funmode.ui.FUNMODE_COLLECTION_JOKERS then
         Funmode.ui.FUNMODE_COLLECTION_JOKERS[#Funmode.ui.FUNMODE_COLLECTION_JOKERS]:remove()
+        Funmode.manfred_card[Funmode.using_manfred].ability.extra.used2 = true
         Funmode.manfred_card[Funmode.using_manfred] = nil
         Funmode.using_manfred = Funmode.using_manfred - 1
         if Funmode.using_manfred == 0 then
@@ -204,7 +205,7 @@ local drag_ref = Card.drag
 function Card:drag()
     if Funmode.using_manfred > 0 then
         if self.config.center.key == 'j_joker' or self.config.center.rarity ~= 4 and not Funmode.manfred_card[Funmode.using_manfred].ability.extra.used[self.config.center.key] then
-            SMODS.add_card({key = self.config.center.key, edition = {}, stickers = {'funmode_fabricated_sticker'}, force_stickers = true})
+            SMODS.add_card({key = self.config.center.key, edition = {}, stickers = {'funmode_true_perishable'}, force_stickers = true})
             Funmode.manfred_card[Funmode.using_manfred].ability.extra.used[self.config.center.key] = true
             G.FUNCS.close_funmode_collection_jokers()
             save_run()
@@ -219,4 +220,33 @@ G.FUNCS.funmode_manfred_use_init = function(card)
     Funmode.using_manfred = Funmode.using_manfred + 1
     Funmode.manfred_card[Funmode.using_manfred] = card
     G.FUNCS.funmode_collection_jokers()
+    end
+
+
+
+-- whiplash
+
+local exit_overlay_menu_ref = G.FUNCS.exit_overlay_menu
+G.FUNCS.exit_overlay_menu = function(args)
+    if Funmode.using_whiplash then
+        Funmode.using_whiplash = false
+        end
+    return exit_overlay_menu_ref(args)
+    end
+
+local drag_ref = Card.drag
+function Card:drag()
+    if Funmode.using_whiplash then
+        Funmode.whiplash_card.ability.extra.card = self
+        Funmode.whiplash_card = nil
+        G.FUNCS.exit_overlay_menu()
+    else
+        return drag_ref(self)
+        end
+    end
+
+G.FUNCS.funmode_whiplash_init = function(card)
+    Funmode.whiplash_card = card
+    Funmode.using_whiplash = true
+    G.FUNCS.overlay_menu({definition = G.UIDEF.deck_info(true)})
     end

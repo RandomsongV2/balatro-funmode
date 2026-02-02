@@ -1,16 +1,16 @@
---SMODS.Challenge {
---    key = 'dark_souls',
---    rules = {
---        custom = {
---            {id = 'funmode_legendary_always'},
---            {id = 'scaling', value = 5}
---        },
---    },
---    jokers = {},
---    restrictions = {
---        banned_cards = {}
---    }
---}
+SMODS.Challenge {
+    key = 'dark_souls',
+    rules = {
+        custom = {
+            {id = 'funmode_legendary_always'},
+            {id = 'scaling', value = 5}
+        },
+    },
+    jokers = {},
+    restrictions = {
+        banned_cards = {}
+    }
+}
 
 SMODS.Challenge {
     key = 'delivery_1',
