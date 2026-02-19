@@ -15,20 +15,21 @@ extern bool shadow;
 extern PRECISION vec4 burn_colour_1;
 extern PRECISION vec4 burn_colour_2;
 
+//for changing colour
+extern PRECISION vec3 colour_values;
+
 vec4 dissolve_mask(vec4 tex, vec2 texture_coords, vec2 uv);
 
 vec4 effect( vec4 colour, Image texture, vec2 texture_coords, vec2 screen_coords )
 {
     vec4 tex = Texel(texture, texture_coords);
 	vec2 uv = (((texture_coords)*(image_details)) - texture_details.xy*texture_details.ba)/texture_details.ba;
-    number color_rgb = tex.r*0.299 + tex.g*0.587 + tex.b*0.114 + monochrome.x*0.005;
-    tex.r = color_rgb;
-    tex.g = color_rgb;
-    tex.b = color_rgb;
+    number color_rgb = tex.r*0.299 + tex.g*0.587 + tex.b*0.114 + 0.0001 * monochrome.y;
+    tex.r = color_rgb * colour_values.r;
+    tex.g = color_rgb * colour_values.g;
+    tex.b = color_rgb * colour_values.b;
     return dissolve_mask(tex*colour, texture_coords, uv);
 }
-
-//useless things
 
 vec4 dissolve_mask(vec4 tex, vec2 texture_coords, vec2 uv)
 {

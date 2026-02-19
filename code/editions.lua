@@ -2,7 +2,7 @@ SMODS.Shader {
     key = 'monochrome',
     path = 'monochrome.fs',
     send_vars = function (sprite, card)
-        return {}
+        return {colour_values = card.funmode_monochrome_vars or {1, 1, 1}}
     end,
 }
 SMODS.Edition {
@@ -15,6 +15,17 @@ SMODS.Edition {
     weight = 3,
     extra_cost = 1,
     apply_to_float = true,
+    on_apply = function(card)
+        if not card.funmode_monochrome_vars then
+            col = {
+                pseudorandom('funmode_monochrome_color_r', 0, 1),
+                pseudorandom('funmode_monochrome_color_g', 0, 1),
+                pseudorandom('funmode_monochrome_color_b', 0, 1),
+                   }
+            if col == {0, 0, 0} then col = {1, 1, 1} end
+            card.funmode_monochrome_vars = col
+            end
+        end,
     loc_vars = function(self)
         end,
     calculate = function(self, card, context)
@@ -59,6 +70,7 @@ local flip_card = function(card)
     }))
     return true
     end
+-- this is stupid, if you want to do something similar do it with sticker
 SMODS.Edition {
     key = 'copycard',
     no_collection = true,
@@ -83,6 +95,18 @@ SMODS.Edition {
                 return true
                 end
         }))
+        end,
+        -- for monochrome shader
+    on_apply = function(card)
+        if not card.funmode_monochrome_vars then
+            col = {
+                pseudorandom('funmode_monochrome_color_r', 0, 1),
+                pseudorandom('funmode_monochrome_color_g', 0, 1),
+                pseudorandom('funmode_monochrome_color_b', 0, 1),
+                   }
+            if col == {0, 0, 0} then col = {1, 1, 1} end
+            card.funmode_monochrome_vars = col
+            end
         end,
 
     calculate = function(self, card, context)
@@ -158,28 +182,28 @@ SMODS.Edition {
             end
 
 
-        if context.seal_applied and context.seal_target.ability and context.seal_target.ability.copycard_id == card.ability.copied_card and
-        card.seal ~= context.seal then
-            card.ability.funmode_extra.seal = context.seal
+        if context.funmode_seal_applied and context.funmode_seal_target.ability and context.funmode_seal_target.ability.copycard_id == card.ability.copied_card and
+        card.seal ~= context.funmode_seal then
+            card.ability.funmode_extra.seal = context.funmode_seal
             G.E_MANAGER:add_event(Event({
                 trigger = 'after',
                 delay = 0.1,
                 func = function()
-                    card:set_seal(context.seal, nil, true)
+                    card:set_seal(context.funmode_seal, nil, true)
                     return true
                 end
             }))
             end
 
-        if context.enhancement_applied and context.enhancement_target.ability and context.enhancement_target.ability.copycard_id == card.ability.copied_card and
-        card.config.center_key ~= context.enhancement then
-            card.ability.funmode_extra.enhancement = context.enhancement
+        if context.funmode_enhancement_applied and context.funmode_enhancement_target.ability and context.funmode_enhancement_target.ability.copycard_id == card.ability.copied_card and
+        card.config.center_key ~= context.funmode_enhancement then
+            card.ability.funmode_extra.enhancement = context.funmode_enhancement
             flip_card(card)
             G.E_MANAGER:add_event(Event({
                 trigger = 'after',
                 delay = 0.1,
                 func = function()
-                    card:set_ability(context.enhancement)
+                    card:set_ability(context.funmode_enhancement)
                     return true
                     end
             }))
@@ -204,7 +228,7 @@ SMODS.Edition {
 
 ----------------------- block changes of this card
 
-        if context.seal_applied and context.seal_target == card and context.seal ~= card.ability.funmode_extra.seal then
+        if context.funmode_seal_applied and context.funmode_seal_target == card and context.funmode_seal ~= card.ability.funmode_extra.seal then
             G.E_MANAGER:add_event(Event({
                 trigger = 'immediate',
                 blockable = false,
@@ -215,9 +239,9 @@ SMODS.Edition {
             }))
             end
 
-        if context.enhancement_applied and
-        context.enhancement_target == card
-        and context.enhancement ~= card.ability.funmode_extra.enhancement
+        if context.funmode_enhancement_applied and
+        context.funmode_enhancement_target == card
+        and context.funmode_enhancement ~= card.ability.funmode_extra.enhancement
         then
             G.E_MANAGER:add_event(Event({
                 trigger = 'immediate',

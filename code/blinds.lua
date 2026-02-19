@@ -65,7 +65,6 @@ SMODS.Blind {
     discovered = true,
     dollars = 5,
     mult = 4,
-    boss = {min = 9999}, --todo: fix observed cards
     calculate = function(self, card, context)
         if G and G.hand and context.before then
             for _, played_card in ipairs(context.full_hand) do

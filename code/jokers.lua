@@ -1,4 +1,4 @@
-SMODS.Atlas{
+SMODS.Atlas{ --I DONT KNOW WHAT CARDAREA IS IT
     key = 'jokers',
     path = 'jokers.png',
     px = 71,
@@ -612,7 +612,7 @@ SMODS.Joker{
     perishable_compat = true,
     pos = {x = 0, y = 2},
     calculate = function(self, card, context)
-        if (context.card_added or context.selling_card or context.joker_type_destroyed or context.card_released) and not context.blueprint then
+        if (context.card_added or context.selling_card or context.joker_type_destroyed or context.funmode_card_released) and not context.blueprint then
             for i = 1, #G.jokers.cards do
                 if G.jokers.cards[i] and G.jokers.cards[i].config.center_key == 'j_funmode_black_market' and not G.jokers.cards[i].debuff then
                     if i and G.jokers.cards[i + 1] then
@@ -1074,6 +1074,7 @@ SMODS.Joker{
     pos = {x = 5, y = 1},
     config = {extra = {gain = 0.5}},
     loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = {key = 'eternal', set = 'Other'}
         local xmult = (function() et = 0 if G.jokers then for _, c in ipairs(G.jokers.cards) do if c.ability.eternal then et = et + 1 end end end return et end)()
         return {vars = {center.ability.extra.gain, xmult * center.ability.extra.gain + 1}}
         end,
@@ -1356,13 +1357,13 @@ SMODS.Joker{
 }
 
 SMODS.Joker{
-    key = 'bald', --i wanted to retrigger all edition effects but i dont know how
+    key = 'bald', --i wanted to retrigger all edition effects but i dont know how, todo?
     atlas ='jokers',
     rarity = 2,
     cost = 6,
     unlocked = true,
     discovered = true,
-    blueprint_compat = false,
+    blueprint_compat = true,
     eternal_compat = true,
     perishable_compat = true,
     pos = {x = 5, y = 4},
@@ -1372,4 +1373,140 @@ SMODS.Joker{
             return {repetitions = card.ability.extra.repetitions}
             end
         end
+}
+
+local function calculate_stronger_mult(mod)
+    local mults = {}
+    if G.jokers then
+        for i, c in ipairs(G.jokers.cards) do
+            if c.config.center.key ~= 'j_funmode_stronger' then
+                mults[#mults + 1] = (c.ability.mult or 0)
+                + (c.ability.t_mult or 0)
+                + (type(c.ability.extra) == 'table' and ((c.ability.extra.mult or 0) + (c.ability.extra.t_mult or 0)) or 0)
+            end
+        end
+    end
+    table.sort(mults)
+    local total = mod
+    for i, n in ipairs(mults) do
+        if n < total then
+            total = total + mod
+        else
+            break
+        end
+    end
+    return total
+end
+SMODS.Joker{
+    key = 'stronger',
+    atlas ='jokers',
+    rarity = 1,
+    cost = 4,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    config = {extra = {mod = 4, mult = 4}},
+    loc_vars = function(self, info_queue, center)
+        center.ability.extra.mult = calculate_stronger_mult(center.ability.extra.mod)
+        return {vars = {center.ability.extra.mod, center.ability.extra.mult}}
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main then
+            card.ability.extra.mult = calculate_stronger_mult(card.ability.extra.mod)
+            return {mult = card.ability.extra.mult}
+        end
+    end
+}
+
+SMODS.Joker {
+    key = 'femail',
+    atlas ='jokers',
+    rarity = 2,
+    cost = 6,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 5},
+    loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = G.P_CENTERS.m_steel
+        return {vars = {localize((G.GAME.current_round.funmode_femail_card or {}).rank or 'Ace', 'ranks')}}
+    end,
+    calculate = function(self, card, context)
+        if context.discard and not context.other_card.debuff
+        and context.other_card:get_id() == G.GAME.current_round.funmode_femail_card.id
+        then
+            context.other_card:set_ability('m_steel', nil, true)
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    context.other_card:juice_up()
+                    return true
+                end
+            }))
+        end
+    end
+}
+function G.FUNCS.reset_funmode_femail_rank()
+    G.GAME.current_round.funmode_femail_card = {rank = 'Ace'}
+    local valid_femail_cards = {}
+    for _, playing_card in ipairs(G.playing_cards) do
+        if not SMODS.has_no_rank(playing_card) then
+            valid_femail_cards[#valid_femail_cards + 1] = playing_card
+        end
+    end
+    local mail_card = pseudorandom_element(valid_femail_cards, 'vremade_mail' .. G.GAME.round_resets.ante)
+    if mail_card then
+        G.GAME.current_round.funmode_femail_card.rank = mail_card.base.value
+        G.GAME.current_round.funmode_femail_card.id = mail_card.base.id
+    end
+end
+
+SMODS.Joker{
+    key = 'seal',
+    atlas ='jokers',
+    rarity = 2,
+    cost = 8,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 0, y = 0},
+    config = {extra = {repetitions = 1}},
+
+
+    calculate = function(self, card, context)
+
+        if context.other_card and context.other_card.seal and (context.funmode_j_seal or 0) < #SMODS.find_card("j_funmode_seal", true) then
+            context.funmode_j_seal = (context.funmode_j_seal or 0) + 1
+            local ret = {}
+
+            if context.other_card.seal == 'Gold' then
+                if context.cardarea == G.play then
+                    ret.playing_card = {p_dollars = 3}
+                end
+            end
+            if context.other_card.seal == 'Blue' then
+                if context.end_of_round then
+                    context.other_card:get_end_of_round_effect(context)
+                end
+            end
+            local seals = context.other_card:calculate_seal(context)
+            if seals then
+                ret.seals = seals
+            end
+
+            SMODS.update_context_flags(context, SMODS.trigger_effects({ret}, context.other_card))
+        end
+
+        if context.other_card and context.other_card.seal == 'Red' then
+            if context.repetition then
+                return {repetitions = 1}
+            end
+        end
+    end
 }

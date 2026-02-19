@@ -348,7 +348,7 @@ SMODS.Consumable{
     pos = {x = 3, y = 2},
     config = {extra = {select = 1}},
     loc_vars = function(self, info_queue, center)
-        --info_queue[#info_queue + 1] = G.P_CENTERS.eternal --there is no stickers in P_CENTERS :(
+        info_queue[#info_queue + 1] = {key = 'eternal', set = 'Other'}
         return {vars = {center.ability.extra.select}}
         end,
     unlocked = true,
@@ -358,7 +358,7 @@ SMODS.Consumable{
         return G.jokers and #G.jokers.highlighted ~= 0 and #G.jokers.highlighted <= card.ability.extra.select and
         (function()
             for _, c in ipairs(G.jokers.highlighted) do
-                if not c.ability.eternal then
+                if not c.ability.eternal and not c.ability.funmode_true_perishable then
                     return true
                     end
                 end
@@ -367,7 +367,9 @@ SMODS.Consumable{
         end,
     use = function(self, card, area, copier)
         for _, c in ipairs(G.jokers.highlighted) do
-            c:add_sticker('eternal', true)
+            if not c.ability.funmode_true_perishable then
+                c:add_sticker('eternal', true)
+                end
             end
         end
 }
@@ -487,4 +489,71 @@ SMODS.Consumable {
         }))
         delay(0.5)
     end,
+}
+
+SMODS.Consumable{
+    key = 'draedon',
+    set = 'FunCard',
+    atlas = 'fun_cards',
+    pos = {x = 0, y = 3},
+    unlocked = true,
+    discovered = true,
+    cost = 8,
+    can_use = function(self, card)
+        return true
+        end,
+    use = function(self, card, area, copier)
+        G.FUNCS.funmode_draedon_init()
+        end
+}
+
+local function multiply_table(table, mult)
+    if type(table) == 'table' then
+        for i, v in ipairs(table) do
+            table[i] = multiply_table(v, mult)
+            end
+        return table
+    elseif type(table) == 'number' then
+        return table * mult
+    else
+        return table
+        end
+    end
+SMODS.Consumable{
+    key = 'black_rose',
+    set = 'FunCard',
+    atlas = 'fun_cards',
+    pos = {x = 1, y = 3},
+    config = {extra = {select = 1}},
+    loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = {key = 'funmode_true_perishable', set = 'Other'}
+        return {vars = {center.ability.extra.select}}
+        end,
+    unlocked = true,
+    discovered = true,
+    cost = 6,
+    can_use = function(self, card)
+        return G.jokers and #G.jokers.highlighted ~= 0 and #G.jokers.highlighted <= card.ability.extra.select and
+        (function()
+            for _, c in ipairs(G.jokers.highlighted) do
+                if not c.ability.eternal then
+                    return true
+                    end
+                end
+            return false
+            end)()
+        end,
+    use = function(self, card, area, copier)
+        for _, c in ipairs(G.jokers.highlighted) do
+            if not c.ability.eternal then
+                local mult = 2
+                c:add_sticker('funmode_true_perishable', true)
+                c.ability.extra = multiply_table(c.ability.extra, mult)
+                c.ability.t_mult = (c.ability.t_mult or 0) * mult
+                c.ability.t_chips = (c.ability.t_chips or 0) * mult
+                c.ability.mult = (c.ability.mult or 0) * mult
+                c.ability.chips = (c.ability.chips or 0) * mult
+                end
+            end
+        end
 }

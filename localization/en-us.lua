@@ -38,12 +38,42 @@ return {
                     '{C:inactive}previous seed: {C:attention}#1#'
                     }
                 },
+            c_funmode_lock_in = {
+                name = 'Lock In',
+                text = {
+                    'add {C:attention}eternal{} sticker',
+                    'to {C:attention}#1#{} selected joker'
+                    }
+                },
+            c_funmode_wheel_of_unfortune = {
+                name = 'Wheel Of Unfortune',
+                text = {
+                    'Gain {C:money}$#1#{}',
+                    '{C:green}#2# in #3#{} chance to',
+                    '{C:red}remove{} a joker edition'
+                    }
+                },
             c_funmode_weakness = {
                 name = 'Weakness',
                 text = {
                     "Decreases rank of",
                     "up to {C:attention}#1#{} selected",
                     "cards by {C:attention}1",
+                    },
+                },
+            c_funmode_draedon = {
+                name = 'Draedon',
+                text = {
+                    "Lets you {C:attention}choose",
+                    "next boss blind",
+                    },
+                },
+            c_funmode_black_rose = {
+                name = 'Black Rose',
+                text = {
+                    "{C:attention}Double{} values of {C:attention}#1#",
+                    "selected joker and",
+                    "apply {C:attention}true perishable"
                     },
                 },
             },
@@ -91,16 +121,16 @@ return {
                      'Remove {C:attention}enhancements',
                      '{C:attention}seals{} and {C:attention}editions{} from',
                      'up to {C:attention}#1#{} selected cards',
-                     'randomize {C:attention}rank{} and {C:attention}suit'
+                     'randomize {C:attention}ranks{} and {C:attention}suits'
                         }
                 },
             c_funmode_poly_u = {
                 name = 'Unstable Polymorphine',
                 text = {
-                     'Remove {C:attention}enhancements',
-                     '{C:attention}seals{} and {C:attention}editions{} from',
-                     'all cards held in hand',
-                     'randomize {C:attention}rank{} and {C:attention}suit'
+                     'Remove {C:attention}seals{} and {C:attention}editions{} from',
+                     '#1# cards held in hand',
+                     'randomize {C:attention}enhancements{}',
+                     '{C:attention}ranks{} and {C:attention}suits'
                         }
                 },
             c_funmode_poly_c = {
@@ -333,7 +363,8 @@ return {
                 text = {
                     'Choose one card',
                     'that will be {C:attention}guaranteed{} to draw',
-                    'current card: {V:1}#1#{} of {V:1}#2#'
+                    'current card: {V:1}#1#{} of {V:1}#2#',
+                    '{C:inactive}doesnt work'
                     },
                 },
             j_funmode_glass_cannon = {
@@ -377,7 +408,7 @@ return {
                 text = {
                     '{X:mult,C:white}X#1#{} Mult',
                     '{f:funmode_wingdings}Sets font to wingdings',
-                    '{C:inactive}this font ^ doesnt work{}'
+                    '{C:inactive}^ this font doesnt work{}'
                     },
                 },
             j_funmode_apartment_13 = {
@@ -440,8 +471,9 @@ return {
                 text = {
                     '{C:white,X:mult}X#1#{} Mult',
                     'when hand played',
-                    'uses money equal to',
-                    '{C:attention}xmult squared'
+                    '{C:attention}spends{} money equal to',
+                    'xmult squared',
+                    '{C:inactive}doesnt work'
                     },
                 },
             j_funmode_trash = {
@@ -456,6 +488,29 @@ return {
                 text = {
                     'Retriggers all playing cards',
                     'with {C:dark_edition}edition'
+                    },
+                },
+            j_funmode_stronger = {
+                name = 'Stronger Than You',
+                text = {
+                    '{C:mult}+#1#{} mult for each joker',
+                    'that has {C:attention}less{} mult than',
+                    'this joker',
+                    '{C:inactive}(currently: {C:mult}+#2#{C:inactive} Mult)'
+                    },
+                },
+            j_funmode_femail = {
+                name = "(Fe)mail-In Rebate",
+                text = {
+                    "turns each discarded {C:attention}#1#{}",
+                    "into {C:attention}Steel Card{}, rank",
+                    "changes every round",
+                    },
+                },
+            j_funmode_seal = {
+                name = 'Seal',
+                text = {
+                    'Retriggers all {C:attention}seals',
                     },
                 },
             },
@@ -475,8 +530,9 @@ return {
             bl_funmode_ink = {
                 name = 'Rainbow Ink',
                 text = {
+                        '{C:red}currently does not work',
                         'changes boss blind',
-                        'each hand drawn'
+                        'each hand drawn',
                         }
                 },
             },
@@ -559,6 +615,18 @@ return {
                 },
             },
         },
+        Planet = {
+            c_funmode_makemake = {
+                name = "Makemake",
+                text = {
+                    "({V:1}lvl.#1#{}) Level up",
+                    "{C:attention}#2#",
+                    "{C:mult}+#3#{} Mult and",
+                    "{C:chips}+#4#{} chips",
+                },
+            },
+        },
+
 
 
     },
@@ -574,6 +642,10 @@ return {
             funmode_copycard = "Monochrome",
             funmode_true_perishable = "Perishable",
             funmode_element = "Element",
+			k_funmode_spell = "Spell",
+        },
+        dictionary = {
+			k_funmode_spell = "Spell",
         },
         challenge_names = {
             c_funmode_dark_souls = 'Dark Souls',
@@ -587,13 +659,13 @@ return {
             ch_c_gold_stake = {'Gold stake'}
         },
         v_dictionary = {
-            a_money = '+$#1#'
+            a_money = '+$#1#',
         },
         poker_hands = {
-            funmode_lone_face = "Lone Face"
+            ['funmode_Lone Face'] = "Lone Face"
         },
 		poker_hand_descriptions = {
-            funmode_lone_face = {"high card with 5 face cards"}
+            ['funmode_Lone Face'] = {"high card with 5 face cards"}
         },
         ranks = {
             ['funmode_1'] = "1",

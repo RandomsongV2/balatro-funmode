@@ -1,28 +1,21 @@
 local stop_drag_ref = Card.stop_drag
 function Card:stop_drag()
     ref = stop_drag_ref(self)
-    SMODS.calculate_context({card_released = true, released_card = self})
-    return ref
-    end
-
-local set_edition_ref = Card.set_edition
-function Card:set_edition(edition, immediate, silent)
-    ref = set_edition_ref(self, edition, immediate, silent)
-    SMODS.calculate_context({edition_applied = true, edition_target = self, edition = edition})
+    SMODS.calculate_context({funmode_card_released = true, funmode_released_card = self})
     return ref
     end
 
 local set_seal_ref = Card.set_seal
 function Card:set_seal(seal, immediate, silent)
     ref = set_seal_ref(self, seal, immediate, silent)
-    SMODS.calculate_context({seal_applied = true, seal_target = self, seal = seal})
+    SMODS.calculate_context({funmode_seal_applied = true, funmode_seal_target = self, funmode_seal = seal})
     return ref
     end
 
 local set_ability_ref = Card.set_ability
 function Card:set_ability(enhancement, initial, delay_sprites)
     ref = set_ability_ref(self, enhancement, initial, delay_sprites)
-    SMODS.calculate_context({enhancement_applied = true, enhancement_target = self, enhancement = enhancement})
+    SMODS.calculate_context({funmode_enhancement_applied = true, funmode_enhancement_target = self, funmode_enhancement = enhancement})
     return ref
     end
 
@@ -35,6 +28,14 @@ function copy_card(card, args)
     return ref
     end
 
+local set_base_ref = Card.set_base
+function Card:set_base(card, initial)
+    ref = set_base_ref(self, card, initial)
+    if not initial then
+        SMODS.calculate_context({funmode_base_applied = true, funmode_base_target = self, funmode_suit = self.config.card.suit})
+    end
+    return base
+end
 
 local function safe_get(table, args)
 	local current = table
@@ -94,11 +95,9 @@ function Game:start_run(args)
                                     skip_materialize = true,
                                     soulable = false,
                                     key = "c_soul",
-                                    --key_append = "pl1"
                                 }
                             else
-                                _card = { set = "Tarot", area = G.pack_cards, skip_materialize = true, soulable = true, --key_append = "pl1"
-                                }
+                                _card = { set = "Tarot", area = G.pack_cards, skip_materialize = true, soulable = true}
                             end
                             return _card
                         end,
@@ -142,3 +141,10 @@ function Card:start_materialize(dissolve_colours, silent, timefac)
 --        end
 --    ease_background_colour_blind{new_colour = lighten(mix_colours(boss_col. G.C.BLACK, 0.3), 0.1), special_colour = boss_col, contrast = 2}
 --    end
+--    get_new_boss()
+
+local play = G.FUNCS.play_cards_from_highlighted
+function G.FUNCS.play_cards_from_highlighted()
+	SMODS.calculate_context({funmode_pre_play = true})
+	return play(self)
+end

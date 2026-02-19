@@ -1,0 +1,29 @@
+[manifest] # Header for the file, this should only be here once at the beginning
+version = "0.1.0"
+priority = 0 # Priority for loading the file
+
+
+# to count negative aces as ace cards
+[[patches]]
+[patches.pattern]
+target = "functions/state_events.lua"
+pattern = '''
+                            --Check for hand doubling
+                            --From Red seal
+                            local eval = eval_card(G.hand.cards[i], {end_of_round = true,cardarea = G.hand, repetition = true, repetition_only = true})
+                            if next(eval) and (next(effects[1]) or #effects > 1)  then
+                                for h = 1, eval.seals.repetitions do
+                                    reps[#reps+1] = eval
+
+'''
+position = "after"
+payload = '''
+    local funmode_retriggers = 0
+    for i, c in ipairs(SMODS.find_card("j_funmode_seal", true)) do
+        funmode_retriggers = funmode_retriggers + (c.ability.extra and c.ability.extra.repetitions or 0)
+        end
+    for i = 1, funmode_retriggers do
+        reps[#reps+1] = eval
+        end
+'''
+match_indent = true

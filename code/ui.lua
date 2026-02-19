@@ -250,3 +250,50 @@ G.FUNCS.funmode_whiplash_init = function(card)
     Funmode.using_whiplash = true
     G.FUNCS.overlay_menu({definition = G.UIDEF.deck_info(true)})
     end
+
+
+-- draedon
+
+local collection_ref = create_UIBox_your_collection
+create_UIBox_your_collection = function(args)
+    if Funmode.using_draedon then
+        Funmode.using_draedon = nil
+    else
+        return collection_ref(args)
+        end
+    end
+
+local drag_ref = Card.drag
+function Card:drag()
+    if Funmode.using_draedon then
+        Funmode.draedon_select = self.config.blind.key
+        G.FUNCS.exit_draedon_ui()
+        end
+    return drag_ref(self)
+    end
+
+G.FUNCS.exit_draedon_ui = function()
+    G.FUNCS:exit_overlay_menu()
+    Funmode.using_draedon = nil
+    end
+
+G.FUNCS.funmode_draedon_init = function(card)
+    Funmode.using_draedon = true
+    G.FUNCS.overlay_menu({definition = create_UIBox_your_collection_blinds('exit_draedon_ui')})
+    end
+
+local get_boss_ref = get_new_boss
+function get_new_boss()
+    if Funmode.draedon_select
+    and G.P_BLINDS[Funmode.draedon_select]
+    and G.P_BLINDS[Funmode.draedon_select].boss
+    and ((G.P_BLINDS[Funmode.draedon_select].boss.showdown and (G.GAME.round_resets.ante)%G.GAME.win_ante == 0 and G.GAME.round_resets.ante >= 2)
+    or (not G.P_BLINDS[Funmode.draedon_select].boss.showdown and (G.GAME.round_resets.ante)%G.GAME.win_ante ~= 0 or G.GAME.round_resets.ante < 2))
+    then
+        boss = Funmode.draedon_select
+        Funmode.draedon_select = nil
+    else
+        boss = get_boss_ref()
+        end
+    return boss
+    end
