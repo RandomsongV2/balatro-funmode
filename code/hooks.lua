@@ -1,40 +1,53 @@
 local stop_drag_ref = Card.stop_drag
 function Card:stop_drag()
-    ref = stop_drag_ref(self)
+    local ref = stop_drag_ref(self)
     SMODS.calculate_context({funmode_card_released = true, funmode_released_card = self})
     return ref
     end
 
 local set_seal_ref = Card.set_seal
 function Card:set_seal(seal, immediate, silent)
-    ref = set_seal_ref(self, seal, immediate, silent)
-    SMODS.calculate_context({funmode_seal_applied = true, funmode_seal_target = self, funmode_seal = seal})
-    return ref
+    if not Funmode.ignore_change_context then
+        funmode_seal_old = self.seal
+        local ref = set_seal_ref(self, seal, immediate, silent)
+        SMODS.calculate_context({funmode_seal_applied = true, funmode_seal_target = self, funmode_seal = seal, funmode_seal_old = funmode_seal_old})
+        return ref
+    else
+        Funmode.ignore_change_context = false
+        return  set_seal_ref(self, seal, immediate, silent)
     end
+end
 
 local set_ability_ref = Card.set_ability
 function Card:set_ability(enhancement, initial, delay_sprites)
-    ref = set_ability_ref(self, enhancement, initial, delay_sprites)
-    SMODS.calculate_context({funmode_enhancement_applied = true, funmode_enhancement_target = self, funmode_enhancement = enhancement})
-    return ref
+    if not Funmode.ignore_change_context then
+        funmode_enhancement_old = self.config.center_key
+        local ref = set_ability_ref(self, enhancement, initial, delay_sprites)
+        SMODS.calculate_context({funmode_enhancement_applied = true, funmode_enhancement_target = self,
+                funmode_enhancement = enhancement, funmode_enhancement_old = funmode_enhancement_old})
+        return ref
+    else
+        Funmode.ignore_change_context = false
+        return set_ability_ref(self, enhancement, initial, delay_sprites)
     end
-
-local copy_card_ref = copy_card
-function copy_card(card, args)
-    ref = copy_card_ref(card, args)
-    if ref.ability and ref.ability.copycard_id then
-        ref.ability.copycard_id = nil
-        end
-    return ref
     end
 
 local set_base_ref = Card.set_base
 function Card:set_base(card, initial)
-    ref = set_base_ref(self, card, initial)
-    if not initial then
-        SMODS.calculate_context({funmode_base_applied = true, funmode_base_target = self, funmode_suit = self.config.card.suit})
+    if not Funmode.ignore_change_context then
+        local funmode_suit_old = self.config.card.suit
+        local funmode_rank_old = self.config.card.value
+        local ref = set_base_ref(self, card, initial)
+        if not initial then
+            SMODS.calculate_context({funmode_base_applied = true, funmode_base_target = self,
+                    funmode_suit = self.config.card.suit, funmode_rank = self.config.card.value,
+                    funmode_suit_old = funmode_suit_old, funmode_rank_old = funmode_rank_old})
+        end
+        return ref
+    else
+        Funmode.ignore_change_context = false
+        return set_base_ref(self, card, initial)
     end
-    return base
 end
 
 local function safe_get(table, args)
@@ -77,52 +90,6 @@ function generate_card_ui(_c, full_UI_table, specific_vars, card_type, badges, h
     return full_UI_table
     end
 
--- custom challenge effects
-local start_run_ref = Game.start_run
-function Game:start_run(args)
-    ref = start_run_ref(self, args)
-	if G.GAME and args.challenge and args.challenge.rules and args.challenge.rules.custom then
-        Funmode.debug = args.challenge.rules.custom
-        for i, r in ipairs(args.challenge.rules.custom) do
-            if r.id == 'funmode_legendary_always' then
-                SMODS.Booster:take_ownership_by_kind('Arcana', {
-                        create_card = function(self, card, i)
-                            local _card
-                            if i == 1 then
-                                _card = {
-                                    set = "Spectral",
-                                    area = G.pack_cards,
-                                    skip_materialize = true,
-                                    soulable = false,
-                                    key = "c_soul",
-                                }
-                            else
-                                _card = { set = "Tarot", area = G.pack_cards, skip_materialize = true, soulable = true}
-                            end
-                            return _card
-                        end,
-                        loc_vars = pack_loc_vars,
-                    },
-                    true
-                )
-            elseif r.id == 'gold_stake' then
-                --todo
-                end
-            end
-        end
-    return ref
-    end
-
--- delivery challenge
-local remove_ref = Card.remove
-function Card:remove(args)
-	if self.config and self.config.center and self.config.center.key == 'j_ice_cream' and self.area == G.jokers and G.GAME.modifiers and G.GAME.modifiers.funmode_ice_cream_delivery then
-        G.STATE = G.STATES.GAME_OVER
-        G.FILE_HANDLER.force = true
-        G.STATE_COMPLETE = false
-        end
-    return remove_ref(self, args)
-    end
 
 local start_materialize_ref = Card.start_materialize
 function Card:start_materialize(dissolve_colours, silent, timefac)

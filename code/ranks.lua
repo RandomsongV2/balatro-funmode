@@ -17,7 +17,17 @@ local function in_pool_()
     end
 
 
-
+if SMODS.Mods.FunMode.config["challenge only"] then
+SMODS.Rank {
+    key = '0',
+    card_key = '0',
+    lc_atlas = 'extended_ranks',
+    hc_atlas = 'extended_ranks_contrast',
+    pos = {x = 1},
+    nominal = 0,
+    in_pool = (function() return false end)
+}
+else
 SMODS.Rank {
     key = '1',
     card_key = '1',
@@ -118,3 +128,4 @@ SMODS.Rank {
     next = {'funmode_-King'},
     prev = {'funmode_-2'},
 }
+end

@@ -1,4 +1,4 @@
-SMODS.Atlas{ --I DONT KNOW WHAT CARDAREA IS IT
+SMODS.Atlas{ --I DONT KNOW WHAT CARDAREA IS IT \\\\ i dont know what i meant by that
     key = 'jokers',
     path = 'jokers.png',
     px = 71,
@@ -301,22 +301,27 @@ SMODS.Joker{ --really cool joker
                     if selected.ability.x_mult ~= nil and selected.ability.x_mult > 1 then
                         axmult = axmult + selected.ability.x_mult - 1
                     elseif selected.ability.Xmult ~= nil and selected.ability.Xmult > 1 then
-                        axmult = axmult + selected.ability.Xmult
+                        axmult = axmult + selected.ability.Xmult - 1
                     elseif selected.ability.xmult ~= nil and selected.ability.xmult > 1 then
-                        axmult = axmult + selected.ability.xmult
+                        axmult = axmult + selected.ability.xmult - 1
                     elseif type(selected.ability.extra) == "table" and selected.ability.extra.x_mult ~= nil and selected.ability.extra.x_mult > 1 then
                         axmult = axmult + selected.ability.extra.x_mult - 1
                     elseif type(selected.ability.extra) == "table" and selected.ability.extra.Xmult ~= nil and selected.ability.extra.Xmult > 1 then
                         axmult = axmult + selected.ability.extra.Xmult - 1
                     elseif type(selected.ability.extra) == "table" and selected.ability.extra.xmult ~= nil and selected.ability.extra.xmult > 1 then
                         axmult = axmult + selected.ability.extra.xmult - 1
-                    elseif (   selected.config.center.key == "blackboard" or selected.config.center.key == "baron"
-                            or selected.config.center.key == "photograph" or selected.config.center.key == "baseball"
-                            or selected.config.center.key == "ancient"    or selected.config.center.key == "acrobat"
-                            or selected.config.center.key == "flower_pot" or selected.config.center.key == "seeing_double")
+                    elseif (   selected.config.center.key == "j_blackboard" or selected.config.center.key == "j_baron"
+                            or selected.config.center.key == "j_photograph" or selected.config.center.key == "j_baseball"
+                            or selected.config.center.key == "j_ancient"    or selected.config.center.key == "j_acrobat"
+                            or selected.config.center.key == "j_flower_pot" or selected.config.center.key == "j_seeing_double")
                             and type(selected.ability.extra) == "number" and selected.ability.extra > 1
                     then
                         axmult = axmult + selected.ability.extra - 1
+                    else
+                        if not Funmode.debug then
+                            Funmode.debug = {}
+                        end
+                        Funmode.debug[#Funmode.debug + 1] = selected.ability.extra
                     end
 
                     selected.getting_sliced = true
@@ -324,7 +329,7 @@ SMODS.Joker{ --really cool joker
                     G.E_MANAGER:add_event(Event({
                         func = function()
                             G.GAME.joker_buffer = 0
-                            selected:start_dissolve({ HEX("57ecab") }, nil, 1.6)
+                            selected:start_dissolve({ HEX("bc57ab") }, nil, 1.6)
                             play_sound('tarot1', 0.96 + math.random() * 0.08)
                             delay(0.7)
                             return true
@@ -332,12 +337,12 @@ SMODS.Joker{ --really cool joker
                     }))
                     end
                 end
-            card.ability.extra.chips = card.ability.extra.chips + floor(achips/2)
-            card.ability.extra.mult = card.ability.extra.mult + floor(amult/2)
-            card.ability.extra.Xmult = card.ability.extra.Xmult + axmult/2
+            card.ability.extra.chips = card.ability.extra.chips + math.floor(achips)
+            card.ability.extra.mult = card.ability.extra.mult + math.floor(amult)
+            card.ability.extra.Xmult = card.ability.extra.Xmult + axmult
                 return {
-                    card:juice_up(0.8, 0.8),
-                    no_juice = true
+                    no_juice = true,
+                    (axmult + amult + achips > 0) and card:juice_up(0.8, 0.8) or nil
                 }
             end
         if context.joker_main then
@@ -360,20 +365,29 @@ SMODS.Joker{
     blueprint_compat = false,
     eternal_compat = true,
     perishable_compat = true,
-    allow_duplicates = true,
-    pos = {x = 1, y = 2},
-    config = {extra = {xmult = 1, sprite = -1, mult_scaling = 0.5}},
+    pos = {x = 3, y = 2},
+    config = {extra = {xmult = 1, mult_scaling = 0.5}},
     loc_vars = function(self, info_queue, card)
         card.ability.extra.xmult = math.max((#SMODS.find_card("j_funmode_twin", true)) * card.ability.extra.mult_scaling + 1, 1)
         return {vars = {card.ability.extra.xmult, card.ability.extra.mult_scaling} }
         end,
+    in_pool = function()
+        return true, {allow_duplicates = true}
+    end,
     set_sprites = function(self, card, front)
-        if front then
-            if not card.ability.extra.sprite then
-                card.ability.extra.sprite = pseudorandom('twinsprite', 1, 2)
-                end
-            card.children.center:set_sprite_pos({x = card.ability.extra.sprite, y = 2})
+        local pos = card.ability and card.ability.sprite
+        if not pos then
+            pos = pseudorandom('funmode_twinsprite', 1, 2) .. ''
+            -- some modded things multiply whole card.ability table so i turned it to string
+            G.E_MANAGER:add_event(Event({
+                trigger = 'immediate',
+                func = function()
+                    card.ability.sprite = pos
+                    return true
+                    end
+                }))
             end
+        card.children.center:set_sprite_pos({x = pos + 0, y = 2})
         end,
     calculate = function(self, card, context)
         if context.joker_main then
@@ -460,7 +474,7 @@ SMODS.Joker{
 
 SMODS.Joker{
     key = 'slothful',
-    config = {extra = {xmult = 2}},
+    config = {extra = {xmult = 1.75}},
     loc_vars = function(self, info_queue, center)
         return {vars = {center.ability.extra.xmult}}
         end,
@@ -710,13 +724,13 @@ SMODS.Joker{
 
 SMODS.Joker{ -- my new favorite
     key = 'unfair_coin',
-    config = {extra = {streak = 0, used = false, msg = 'heads'}},
+    config = {extra = {base = 1, streak = '0', used = false, msg = 'heads'}},
     loc_vars = function(self, info_queue, center)
-        return {vars = {2 ^ center.ability.extra.streak}}
+        return {vars = {center.ability.extra.base * (2 ^ (center.ability.extra.streak + 0))}}
         end,
     atlas = 'jokers',
-    rarity = 2,
-    cost = 7,
+    rarity = 3,
+    cost = 9,
     unlocked = true,
     discovered = true,
     blueprint_compat = false,
@@ -730,12 +744,12 @@ SMODS.Joker{ -- my new favorite
             end,
         use = function(card)
             if pseudorandom("funmode_j_unfair_coin") < 0.5 then
-                ease_dollars(2 ^ card.ability.extra.streak)
-                card.ability.extra.streak = card.ability.extra.streak + 1
+                ease_dollars(card.ability.extra.base * (2 ^ (card.ability.extra.streak + 0)))
+                card.ability.extra.streak = (card.ability.extra.streak + 1) .. ''
                 SMODS.calculate_effect({message = card.ability.extra.msg}, card)
                 card.ability.extra.msg = card.ability.extra.msg..'!'
             else
-                if card.ability.extra.streak > 1 then
+                if card.ability.extra.streak + 0 > 1 then
                     SMODS.calculate_effect({message = "tails..."}, card)
                 else
                     SMODS.calculate_effect({message = "tails"}, card)
@@ -810,28 +824,46 @@ SMODS.Joker {
     calculate = function(self, card, context)
         if context.hand_drawn and G.GAME.current_round.discards_used <= 0 and G.GAME.current_round.hands_played <= 0 then
             for i = 1, card.ability.extra.destroy do
-                local select = pseudorandom("funmode_leigh", 1, #G.hand.cards + #G.jokers.cards + #G.consumeables.cards)
-                local select1 = nil
-                if select <= #G.hand.cards then
-                    select1 = G.hand.cards[select]
-                elseif select <= #G.hand.cards + #G.jokers.cards then
-                    select1 = G.jokers.cards[select - #G.hand.cards]
-                else
-                    select1 = G.consumeables.cards[select - #G.hand.cards - #G.jokers.cards]
+                local _hand = {}
+                local _jokers = {}
+                local _consumeables = {}
+                for _, c in ipairs(G.hand and G.hand.cards) do
+                    if not c.ability.eternal then
+                        _hand[#_hand + 1] = c
                     end
-                G.E_MANAGER:add_event(Event({
-                    trigger = 'after',
-                    delay = 0.3,
-                    func = function()
-                        card:juice_up(0.8, 0.8)
-                        selected1:juice_up(0.8, 0.8)
-                        if not select1.ability.eternal then
-                            select1:start_dissolve({ HEX("57ecab") }, nil, 1.0)
-                            end
-                        play_sound('slice1', 0.96 + math.random() * 0.08)
-                        return true
+                end
+                for _, c in ipairs(G.jokers and G.jokers.cards) do
+                    if not c.ability.eternal then
+                        _jokers[#_jokers + 1] = c
+                    end
+                end
+                for _, c in ipairs(G.consumeables and G.consumeables.cards) do
+                    if not c.ability.eternal then
+                        _consumeables[#_consumeables + 1] = c
+                    end
+                end
+                if #_hand + #_jokers + #_consumeables >= 1 then
+                    local select = pseudorandom("funmode_leigh", 1, #_hand + #_jokers + #_consumeables)
+                    local select1 = nil
+                    if select <= #_hand then
+                        select1 = _hand[select]
+                    elseif select <= #_hand + #_jokers then
+                        select1 = _jokers[select - #_hand]
+                    else
+                        select1 = _consumeables[select - #_hand - #_jokers]
                         end
-                    }))
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after',
+                        delay = 0.3,
+                        func = function()
+                            card:juice_up(0.8, 0.8)
+                            select1:juice_up(0.8, 0.8)
+                            select1:start_dissolve({ HEX("57ecab") }, nil, 1.0)
+                            play_sound('slice1', 0.96 + math.random() * 0.08)
+                            return true
+                            end
+                        }))
+                    end
                 end
             save_run()
             end
@@ -840,10 +872,10 @@ SMODS.Joker {
 
 SMODS.Joker{
     key = 'whiplash',
-    config = {extra = {card = nil}},
+    config = {funmode_extra = {card = nil}},
     loc_vars = function(self, info_queue, center)
-        if center.ability.extra.card then
-            card_center = center.ability.extra.card.config.card
+        if center.ability.funmode_extra.card then
+            card_center = center.ability.funmode_extra.card.config.card
             return {vars = {localize(card_center.value, 'ranks'), localize(card_center.suit, 'suits_plural'), colours = {G.C.SUITS[card_center.suit]}}}
             end
         return {vars = {'None', 'None', colours = {G.C.UI.TEXT_INACTIVE}}}
@@ -875,8 +907,36 @@ SMODS.Joker{
         return false
         end,
     calculate = function(self, card, context)
+
+        -- from cryptid global sticker
+		if context.cry_shuffling_area and context.cardarea == G.deck and context.cry_post_shuffle and card.ability.funmode_extra.card then --todo add contexts
+			local _targetpos = nil
+			local _selfpos = nil
+
+			-- Iterate through every card in the deck to find both the location
+			-- of the stickered card, and the highest placed non-stickered card
+			for i, _playingcard in ipairs(G.deck.cards) do
+				if _playingcard == card.ability.funmode_extra.card then
+					_selfpos = i
+                    _playingcard.ability.force_draw = true
+				elseif not _playingcard.ability.force_draw == true then
+					_targetpos = i
+				end
+			end
+
+			if _targetpos == nil then
+				_targetpos = #G.deck.cards
+			end
+			if _selfpos == nil then
+				_selfpos = #G.deck.cards
+			end
+
+			-- Swaps the positions of the selected cards
+			G.deck.cards[_selfpos], G.deck.cards[_targetpos] = G.deck.cards[_targetpos], G.deck.cards[_selfpos]
         end
+    end
 }
+
 
 SMODS.Joker{
     key = 'glass_cannon',
@@ -1044,10 +1104,12 @@ SMODS.Joker{
         end,
     add_to_deck = function(self, card, from_debuff)
         G.GAME.round_resets.hands = G.GAME.round_resets.hands - card.ability.extra.hands
+        G.GAME.current_round.hands_left = G.GAME.current_round.hands_left - card.ability.extra.hands
         message = localize{type = 'variable', key = 'a_handsize_minus', vars = {card.ability.extra.hands}}
         end,
     remove_from_deck = function(self, card, from_debuff)
         G.GAME.round_resets.hands = G.GAME.round_resets.hands + card.ability.extra.hands
+        G.GAME.current_round.hands_left = G.GAME.current_round.hands_left + card.ability.extra.hands
         message = localize{type = 'variable', key = 'a_handsize', vars = {card.ability.extra.hands}}
         end,
     calculate = function(self, card, context)
@@ -1289,13 +1351,13 @@ SMODS.Joker{
     eternal_compat = true,
     perishable_compat = true,
     pos = {x = 0, y = 1},
-    config = {extra = {common_mod = 0}},
+    config = {funmode_extra = {common_mod = 1}},
     add_to_deck = function(self, card, from_debuff)
-        card.ability.extra.common_mod = G.GAME.common_mod
+        card.ability.funmode_extra.common_mod = G.GAME.common_mod
         G.GAME.common_mod = 0
         end,
     remove_from_deck = function(self, card, from_debuff)
-        G.GAME.common_mod = card.ability.extra.common_mod
+        G.GAME.common_mod = card.ability.funmode_extra.common_mod
         end,
 }
 
@@ -1469,16 +1531,13 @@ SMODS.Joker{
     key = 'seal',
     atlas ='jokers',
     rarity = 2,
-    cost = 8,
+    cost = 7,
     unlocked = true,
     discovered = true,
     blueprint_compat = true,
     eternal_compat = true,
     perishable_compat = true,
     pos = {x = 0, y = 0},
-    config = {extra = {repetitions = 1}},
-
-
     calculate = function(self, card, context)
 
         if context.other_card and context.other_card.seal and (context.funmode_j_seal or 0) < #SMODS.find_card("j_funmode_seal", true) then
@@ -1509,4 +1568,20 @@ SMODS.Joker{
             end
         end
     end
+}
+
+SMODS.Joker{
+    key = 'morshu',
+    atlas ='jokers',
+    rarity = 2,
+    cost = 8,
+    unlocked = true,
+    discovered = true,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    pos = {x = 1, y = 5},
+    pixel_size = {w = 63, h = 60},
+    display_size = {w = 63 * 1.25, h = 60 * 1.25},
+    -- code is in ui.lua
 }

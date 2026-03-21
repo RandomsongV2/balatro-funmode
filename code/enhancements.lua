@@ -5,26 +5,6 @@ SMODS.Atlas{
     py = 95
 }
 
--- if thy seeketh copycard code thy shall findst it in editions.lua
---(copycard enhancement is a scam, copycard is edition)
-SMODS.Enhancement {
-    key = 'copycard',
-    replace_base_card = true,
-    overrides_base_rank = true,
-    weight = 0,
-    pos = {x = 1, y = 0},
-    in_pool = function(self, args)
-        return false
-        end,
-    loc_vars = function(self, info_queue, center)
-        info_queue[#info_queue + 1] = G.P_CENTERS.e_funmode_monochrome
-        return {vars = {}}
-        end,
-    calculate = function(self, card, context)
-        card:start_dissolve({HEX("57ecab")}, nil, 1.6)
-        end
-}
-
 SMODS.Enhancement {
     key = 'observed',
     config = {mult = 3, funmode_observ_chance = 1/4},

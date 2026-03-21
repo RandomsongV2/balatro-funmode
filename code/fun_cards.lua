@@ -37,7 +37,7 @@ SMODS.Consumable{
     config = {extra = {min = 1, max = 20}},
     unlocked = true,
     discovered = true,
-    cost = 5,
+    cost = 6,
     loc_vars = function(self, info_queue, center)
         return {vars = {center.ability.extra.min, center.ability.extra.max}}
         end,
@@ -160,8 +160,8 @@ SMODS.Consumable{
     discovered = true,
     cost = 6,
     loc_vars = function(self, info_queue, center)
-        info_queue[#info_queue + 1] = G.P_CENTERS.e_funmode_copycard
-        return {vars = {}}
+        info_queue[#info_queue + 1] = {key = 'funmode_copycard', set = 'Other'}
+        info_queue[#info_queue + 1] = G.P_CENTERS.e_funmode_monochrome
     end,
     can_use = function(self, card)
         return G and G.hand and #G.hand.highlighted == 1
@@ -170,22 +170,19 @@ SMODS.Consumable{
         G.E_MANAGER:add_event(Event({
             func = function()
                 G.playing_card = (G.playing_card and G.playing_card + 1) or 1
+                Funmode.set_monochrome_vars(G.hand.highlighted[1])
                 local _card = copy_card(G.hand.highlighted[1], nil, nil, G.playing_card)
-                if not G.hand.highlighted[1].ability.copied_card then
-                    if _card.ability.copycard_id then
-                        _card.ability.copied_card = G.hand.highlighted[1].ability.copycard_id
-                    else
-                        G.GAME.funmode.copycard_id = (G.GAME.funmode.copycard_id or 0) + 1
-                        G.hand.highlighted[1].ability.copycard_id = (G.GAME.funmode.copycard_id or 0)
-                        _card.ability.copied_card = G.GAME.funmode.copycard_id or 0
-                        end
-                    _card.ability.funmode_extra = {}
-                    _card.ability.funmode_extra.rank = G.hand.highlighted[1].config.card.value
-                    _card.ability.funmode_extra.suit = G.hand.highlighted[1].config.card.suit
-                    _card.ability.funmode_extra.seal = G.hand.highlighted[1].seal
-                    _card.ability.funmode_extra.enhancement = G.hand.highlighted[1].config.center_key
-                    _card:set_edition('e_funmode_copycard', true, true)
+                if not G.hand.highlighted[1].ability then G.hand.highlighted[1].ability = {} end
+                if not G.hand.highlighted[1].ability.funmode_copycard then
+                    if not G.hand.highlighted[1].ability.funmode_copiercard then
+                        G.hand.highlighted[1]:add_sticker('funmode_copiercard', true)
+                        G.hand.highlighted[1].ability.funmode_copiercard = (G.GAME.funmode_copycard_id or 0)
+                        G.GAME.funmode_copycard_id = ((G.GAME.funmode_copycard_id or 0) + 1) .. ''
                     end
+                    _card:add_sticker('funmode_copycard', true)
+                    _card.ability.funmode_copycard = G.hand.highlighted[1].ability.funmode_copiercard
+                end
+                _card:set_edition('e_funmode_monochrome')
                 _card:add_to_deck()
                 G.deck.config.card_limit = G.deck.config.card_limit + 1
                 table.insert(G.playing_cards, _card)
@@ -229,7 +226,7 @@ SMODS.Consumable{
 }
 
 SMODS.Consumable{
-    key = 'fun_soul',
+    key = 'fun_soul', --todo: rework so it uses pool instead of what it uses right now
     set = 'FunCard',
     atlas = 'fun_cards',
     pos = {x = 1, y = 1},
@@ -238,10 +235,7 @@ SMODS.Consumable{
     end,
     unlocked = true,
     discovered = true,
-    cost = 8,
-    in_pool = function(self, args)
-        return true
-        end,
+    cost = 7,
     can_use = function(self, card)
         return G.jokers and #G.jokers.cards < G.jokers.config.card_limit
         end,
@@ -507,18 +501,6 @@ SMODS.Consumable{
         end
 }
 
-local function multiply_table(table, mult)
-    if type(table) == 'table' then
-        for i, v in ipairs(table) do
-            table[i] = multiply_table(v, mult)
-            end
-        return table
-    elseif type(table) == 'number' then
-        return table * mult
-    else
-        return table
-        end
-    end
 SMODS.Consumable{
     key = 'black_rose',
     set = 'FunCard',
@@ -526,6 +508,7 @@ SMODS.Consumable{
     pos = {x = 1, y = 3},
     config = {extra = {select = 1}},
     loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = {key = 'funmode_doubled', set = 'Other'}
         info_queue[#info_queue + 1] = {key = 'funmode_true_perishable', set = 'Other'}
         return {vars = {center.ability.extra.select}}
         end,
@@ -546,14 +529,76 @@ SMODS.Consumable{
     use = function(self, card, area, copier)
         for _, c in ipairs(G.jokers.highlighted) do
             if not c.ability.eternal then
-                local mult = 2
                 c:add_sticker('funmode_true_perishable', true)
-                c.ability.extra = multiply_table(c.ability.extra, mult)
-                c.ability.t_mult = (c.ability.t_mult or 0) * mult
-                c.ability.t_chips = (c.ability.t_chips or 0) * mult
-                c.ability.mult = (c.ability.mult or 0) * mult
-                c.ability.chips = (c.ability.chips or 0) * mult
+                c:add_sticker('funmode_doubled', true)
                 end
             end
         end
+}
+
+SMODS.Consumable{
+    key = 'abbie',
+    set = 'FunCard',
+    atlas = 'fun_cards',
+    pos = {x = 2, y = 3},
+    config = {extra = {select = 1}},
+    loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = G.P_CENTERS.e_funmode_monochrome
+        info_queue[#info_queue + 1] = G.P_CENTERS.e_polychrome
+        return {vars = {}}
+        end,
+    unlocked = true,
+    discovered = true,
+    cost = 5,
+    can_use = function(self, card)
+        return ((G.jokers and #G.jokers.highlighted ~= 0 and #G.jokers.highlighted <= card.ability.extra.select) and
+        (function() for _, c in ipairs(G.jokers.highlighted) do if c.edition and c.edition.key == 'e_funmode_monochrome' then return true end end return false end)())
+        or ((G.hand and #G.hand.highlighted ~= 0 and #G.hand.highlighted <= card.ability.extra.select) and
+        (function() for _, c in ipairs(G.hand.highlighted) do if c.edition and c.edition.key == 'e_funmode_monochrome' then return true end end return false end)())
+        end,
+    use = function(self, card, area, copier)
+        if (function() for _, c in ipairs(G.jokers.highlighted) do if c.edition and c.edition.key == 'e_funmode_monochrome' then return true end end return false end)() then
+            for _, c in ipairs(G.jokers.highlighted) do
+                c:set_edition("e_polychrome")
+                end
+        else
+            for _, c in ipairs(G.hand.highlighted) do
+                c:set_edition("e_polychrome")
+                end
+            end
+        end
+}
+
+SMODS.Consumable{
+    key = 'thornring',
+    set = 'FunCard',
+    atlas = 'fun_cards',
+    pos = {x = 3, y = 3},
+    config = {extra = {select = 1}},
+    loc_vars = function(self, info_queue, center)
+        info_queue[#info_queue + 1] = {key = 'funmode_controlled', set = 'Other'}
+        return {vars = {center.ability.extra.select}}
+        end,
+    unlocked = true,
+    discovered = true,
+    cost = 6,
+    in_pool = function(self, args)
+        return false --todo controlled sticker
+    end,
+    can_use = function(self, card)
+        return G.jokers and #G.jokers.highlighted ~= 0 and #G.jokers.highlighted <= card.ability.extra.select and
+        (function()
+            for _, c in ipairs(G.jokers.highlighted) do
+                if not c.ability.funmode_controlled then
+                    return true
+                    end
+                end
+            return false
+            end)()
+        end,
+    use = function(self, card, area, copier)
+        for _, c in ipairs(G.jokers.highlighted) do
+            c:add_sticker('funmode_controlled', true)
+        end
+    end
 }

@@ -8,6 +8,10 @@
   "main_file": "main.lua",
   "priority": 0,
   "badge_colour": "4f6367",
-  "version": "0.1.1",
-  "dependencies": []
+  "version": "0.2.0",
+  "website_url": "https://github.com/RandomsongV2/balatro-funmode",
+    "dependencies": [
+	"Steamodded >= 1.0.0~BETA-1503a-STEAMODDED",
+	"Lovely >= 0.9.0"
+		    ]
 }

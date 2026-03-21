@@ -14,8 +14,6 @@ extern PRECISION vec2 image_details;
 extern bool shadow;
 extern PRECISION vec4 burn_colour_1;
 extern PRECISION vec4 burn_colour_2;
-
-//for changing colour
 extern PRECISION vec3 colour_values;
 
 vec4 dissolve_mask(vec4 tex, vec2 texture_coords, vec2 uv);

@@ -15,7 +15,8 @@ return {
                 },
             c_funmode_hallway = {
                 name = 'Hallway',
-                text = {'Create {C:attention}copycard{} of',
+                text = {'Create a {C:dark_edition}monochrome{}',
+                        '{C:attention}copycard{} of',
                         'one selected card'}
                 },
             c_funmode_no_cost = {
@@ -41,7 +42,7 @@ return {
             c_funmode_lock_in = {
                 name = 'Lock In',
                 text = {
-                    'add {C:attention}eternal{} sticker',
+                    'apply {C:attention}eternal{}',
                     'to {C:attention}#1#{} selected joker'
                     }
                 },
@@ -64,17 +65,30 @@ return {
             c_funmode_draedon = {
                 name = 'Draedon',
                 text = {
-                    "Lets you {C:attention}choose",
-                    "next boss blind",
+                    "{C:attention}choose{} next boss blind",
                     },
                 },
             c_funmode_black_rose = {
                 name = 'Black Rose',
                 text = {
-                    "{C:attention}Double{} values of {C:attention}#1#",
-                    "selected joker and",
-                    "apply {C:attention}true perishable"
+                    "apply {C:attention}doubled{} and",
+                    "{C:attention}true perishable",
+                    "to {C:attention}#1#{} selected joker"
                     },
+                },
+            c_funmode_abbie = {
+                name = 'Abbie',
+                text = {
+                    "Turn {C:attention}1{} selected {C:attention}monochrome{} card",
+                    "into {C:attention}polychrome{} card"
+                    },
+                },
+            c_funmode_thornring = {
+                name = 'Thornring',
+                text = {
+                    'apply {C:attention}controlled{}',
+                    'to {C:attention}#1#{} selected joker'
+                    }
                 },
             },
         elements = {
@@ -253,8 +267,8 @@ return {
                 name = 'The Devouver Of Gods',
                 text = {
                     'when {C:attention}Blind{} is selected',
-                    '{C:red,E:2}destroy{} all jokers and gain half',
-                    'of their {C:chips}chips{}, {C:mult}mult{} and {X:mult,C:white}xmult{}',
+                    '{C:red,E:2}destroy{} all jokers and gain',
+                    'their {C:chips}chips{}, {C:mult}mult{} and {X:mult,C:white}xmult{}',
                     '{C:inactive}(currently {}{C:chips}+#1#{}{C:inactive} / {}{C:mult}+#2#{}{C:inactive} / {}{X:mult,C:white}X#3#{}{C:inactive}){}',
                 },
             },
@@ -285,7 +299,7 @@ return {
             j_funmode_slothful = {
                 name = 'Slothful Joker',
                 text = {
-                    'gives {X:mult,C:white}X#1#{} mult',
+                    '{X:mult,C:white}X#1#{} Mult',
                     'forces game speed to {C:attention}0.5{}'
                     }
                 },
@@ -344,9 +358,8 @@ return {
             j_funmode_knight = {
                 name = 'The Roaring Knight',
                 text = {
-                    'Gains {X:mult,C:white}X#1#{} mult',
-                    'For each {C:spectral}Aura{} used',
-                    'This run',
+                    '{X:mult,C:white}X#1#{} mult for each',
+                    '{C:spectral}Aura{} used This run',
                     '{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive})'
                     },
                 },
@@ -388,8 +401,7 @@ return {
             j_funmode_insurance = {
                 name = 'Insurance',
                 text = {
-                    'When blind selected',
-                    'lose {C:money}$#1#{}',
+                    'When blind selected lose {C:money}$#1#{}',
                     'at end of boss blind',
                     'gain {C:money}$#2#{} for each',
                     '{C:red}debuffed{} card in deck'
@@ -400,7 +412,7 @@ return {
                 text = {
                     'gains {X:mult,C:white}X#1#{} mult',
                     'per {C:attention}consecutively{} scored 8',
-                    '{C:inactive}currently {X:mult,C:white}X#2#'
+                    '{C:inactive}(currently {X:mult,C:white}X#2#{C:inactive})'
                     },
                 },
             j_funmode_wing_ding = {
@@ -513,6 +525,14 @@ return {
                     'Retriggers all {C:attention}seals',
                     },
                 },
+            j_funmode_morshu = {
+                name = 'Morshu',
+                text = {
+                    'Allows {C:attention}haggling{} potentially',
+                    'decreasing price of',
+                    'shop items by {C:attention}25%'
+                    },
+                },
             },
         Blind = {
             bl_funmode_visitor = {
@@ -524,7 +544,7 @@ return {
                 name = 'The Prison',
                 text = {
                         'when hand played',
-                        'set scored {C:chips}chips{} to 0'
+                        'set scored chips to 0'
                         }
                 },
             bl_funmode_ink = {
@@ -535,15 +555,15 @@ return {
                         'each hand drawn',
                         }
                 },
+            bl_funmode_flesh_panopticon = {
+                name = 'Carmine Panopticon',
+                text = {
+                        'when hand played',
+                        'set scored chips to 0'
+                        }
+                },
             },
         Enhanced = {
-            m_funmode_copycard = {
-                name = "Copycard",
-                text = {"copies other card's",
-                        "{C:attention}rank{}, {C:attention}enhancement{} and {C:attention}seal{}",
-                        "changes with copied card",
-                        "{C:inactive,s:0.9}copies are always monochrome{}"}
-                },
             m_funmode_observed = {
                 name = 'Observed',
                 text = {'{C:mult}+3{} mult',
@@ -558,14 +578,6 @@ return {
                     "balances chips and mult",
                     "keeping the score",
                     "{C:inactive}(ex: {}{C:white,X:chips}100{}{C:mult}x{}{C:white,X:mult}1{}{C:inactive} -> {}{C:white,X:chips}10{}{C:mult}x{}{C:white,X:mult}10{}{C:inactive}){}"
-                }
-            },
-            e_funmode_copycard = {
-                name = "Copycard",
-                text = {"copies other card's",
-                        "{C:attention}rank{}, {C:attention}enhancement{} and {C:attention}seal{}",
-                        "changes with copied card",
-                        "{C:inactive,s:0.9}copies are always monochrome{}"
                 }
             },
             e_funmode_element = {
@@ -614,6 +626,45 @@ return {
                     'destroy this card'
                 },
             },
+            funmode_doubled = {
+                name = "Doubled",
+                text = {
+                    '{C:attention}Double{} values',
+                    'of this card'
+                },
+            },
+            funmode_controlled = {
+                name = "Controlled",
+                text = {
+                    '{C:attention}Force trigger{} this card',
+                    'when hand played',
+                    'Block other triggers'
+                },
+            },
+            funmode_copiercard = {
+                name = "Copied card",
+                text = {
+                    "There are {C:attention}copycards",
+                    "of this card"
+                },
+            },
+            funmode_copycard = {
+                name = "Copycard",
+                text = {
+                    "Copies other card's",
+                    "{C:attention}rank{}, {C:attention}enhancement{} and {C:attention}seal{}",
+                    "changes with original",
+                },
+            },
+            funmode_copycard_monochrome = {
+                name = "Copycard",
+                text = {
+                    "Copies other card's",
+                    "{C:attention}rank{}, {C:attention}enhancement{} and {C:attention}seal{}",
+                    "changes with original",
+                    "{C:inactive,s:0.9}copies are always monochrome{}"
+                },
+            },
         },
         Planet = {
             c_funmode_makemake = {
@@ -633,30 +684,30 @@ return {
     misc = {
         achievement_names = {
             ach_funmode_negative_rank = '',
-            },
+        },
         achievement_descriptions = {
             ach_funmode_negative_rank = 'Obtain weakest card',
-            },
+        },
         labels = {
             funmode_monochrome = "Monochrome",
-            funmode_copycard = "Monochrome",
+            funmode_copycard = "Copycard",
+            funmode_copiercard = "Copied",
             funmode_true_perishable = "Perishable",
-            funmode_element = "Element",
-			k_funmode_spell = "Spell",
-        },
-        dictionary = {
-			k_funmode_spell = "Spell",
+            funmode_doubled = "Doubled",
+            funmode_controlled = "Controlled",
         },
         challenge_names = {
             c_funmode_dark_souls = 'Dark Souls',
             c_funmode_delivery_1 = 'Delivery',
             c_funmode_delivery_2 = 'Delivery 2',
             c_funmode_manfred_court = 'Manfred prime',
+            c_funmode_communism = 'Communism'
         },
         v_text = {
             ch_c_funmode_ice_cream_delivery = {'lose run when {C:attention}Ice Cream{} gets destroyed'},
             ch_c_funmode_legendary_always = {'{C:legendary}Soul{} always appears in arcana packs'},
-            ch_c_gold_stake = {'Gold stake'}
+            ch_c_gold_stake = {'Gold stake'},
+            ch_c_funmode_communism = {'Split gained {C:money}${} between you and your jokers'},
         },
         v_dictionary = {
             a_money = '+$#1#',

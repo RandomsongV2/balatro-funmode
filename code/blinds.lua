@@ -6,14 +6,16 @@ SMODS.Atlas{
     atlas_table = 'ANIMATION_ATLAS',
     frames = 21
 }
+
 SMODS.Blind {
     key = 'flesh_prison',
+    discovered = true,
     dollars = 5,
     mult = 2,
     atlas = 'blinds',
     pos = {x = 0, y = 0},
     boss = {min = 3},
-    boss_colour = HEX("646464"),
+    boss_colour = HEX("7f2e22"),
     calculate = function(self, blind, context)
         if not blind.disabled and G.GAME.chips ~= 0 then
             if context.press_play then
@@ -82,10 +84,72 @@ SMODS.Blind {
     discovered = true,
     dollars = 5,
     boss = {showdown = true},
+    unlocked = false, --todo
     in_pool = function(self)
         return false and not G.GAME.funmode.ink_boss --todo
         end,
     set_blind = function(self)
         G.GAME.funmode.ink_boss = true
+        end
+}
+
+SMODS.Atlas{
+    key = 'flesh_pan',
+    path = 'blinds.png',
+    px = 34,
+    py = 34,
+    atlas_table = 'ANIMATION_ATLAS',
+    frames = 20,
+    fps = 7
+}
+SMODS.Blind {
+    key = 'flesh_panopticon',
+    discovered = true,
+    dollars = 5,
+    mult = 2,
+    atlas = 'flesh_pan',
+    pos = {x = 0, y = 3},
+    boss = {showdown = true},
+    boss_colour = HEX("822f23"),
+    calculate = function(self, blind, context)
+        if not blind.disabled and G.GAME.chips ~= 0 then
+            if context.press_play then
+                local old_chips = G.GAME.chips
+                local scaling = G.GAME.chips > 0 and math.max(G.GAME.chips / 8, 250) or math.min(G.GAME.chips / 8, -250)
+                G.counter_debug = 0
+                for i = 1, 8 do
+                    G.counter_debug = G.counter_debug + 1
+                    if G.GAME.chips >= -250 and G.GAME.chips <= 250 or i == 8 then
+                        G.E_MANAGER:add_event(Event({
+                                                    trigger = "ease",
+                                                    delay = 0.1,
+                                                    ref_table = G.GAME,
+                                                    ref_value = 'chips',
+                                                    blockable = true,
+                                                    ease_to = 0,
+                                                    func = function()
+                                                        play_sound('funmode_flesh_heal', 0.96 + math.random() * 0.08, 0.25)
+                                                        return 0
+                                                        end
+                                                    }))
+                        break
+                    else
+                        G.E_MANAGER:add_event(Event({
+                                                    trigger = "ease",
+                                                    delay = 0.1,
+                                                    ref_table = G.GAME,
+                                                    ref_value = 'chips',
+                                                    blockable = true,
+                                                    ease_to = old_chips - scaling * i,
+                                                    func = function()
+                                                        play_sound('funmode_flesh_heal', 0.96 + math.random() * 0.08, 0.25)
+                                                        return old_chips - scaling * i
+                                                        end
+                                                    }))
+                        delay(0.2)
+                        end
+                    end
+                end
+            end
         end
 }

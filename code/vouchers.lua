@@ -5,6 +5,11 @@ SMODS.Atlas{
     py = 95
 }
 
+local poly_weight_ref = G.P_CENTERS.e_polychrome.get_weight or (function(self) return G.P_CENTERS.e_polychrome.weight end)
+G.P_CENTERS.e_polychrome.get_weight = function(self)
+    return poly_weight_ref(self) * (G.GAME.funmode_colour_rate or 1)
+    end
+
 SMODS.Voucher {
     key = 'color_theory',
     atlas = 'vouchers',
@@ -17,14 +22,12 @@ SMODS.Voucher {
     redeem = function(self, card)
         G.E_MANAGER:add_event(Event({
             func = function()
-                G.P_CENTERS.e_polychrome.weight = G.P_CENTERS.e_polychrome.weight * card.ability.extra.rate
-                G.P_CENTERS.e_funmode_monochrome.weight = G.P_CENTERS.e_funmode_monochrome.weight * card.ability.extra.rate
+                G.GAME.funmode_colour_rate = card.ability.extra.rate
                 return true
             end
         }))
     end
 }
-
 
 SMODS.Voucher {
     key = 'color_theory_2',
@@ -39,15 +42,7 @@ SMODS.Voucher {
     redeem = function(self, card)
         G.E_MANAGER:add_event(Event({
             func = function()
-                for v, u in ipairs(G.GAME.used_vouchers) do
-                    if v == 'v_funmode_color_theory' and u then
-                        G.P_CENTERS.e_polychrome.weight = G.P_CENTERS.e_polychrome.weight / G.P_CENTERS.v_funmode_color_theory.config.extra.rate
-                        G.P_CENTERS.e_funmode_monochrome.weight = G.P_CENTERS.e_funmode_monochrome.weight / G.P_CENTERS.v_funmode_color_theory.config.extra.rate
-                        break
-                        end
-                    end
-                G.P_CENTERS.e_polychrome.weight = G.P_CENTERS.e_polychrome.weight * card.ability.extra.rate
-                G.P_CENTERS.e_funmode_monochrome.weight = G.P_CENTERS.e_funmode_monochrome.weight * card.ability.extra.rate
+                G.GAME.funmode_colour_rate = card.ability.extra.rate
                 return true
             end
         }))

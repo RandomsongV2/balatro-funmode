@@ -1,0 +1,3 @@
+return {
+    ["challenge only"] = false
+}

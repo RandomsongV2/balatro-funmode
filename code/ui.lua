@@ -1,4 +1,5 @@
 --from vanillaremade wiki
+-- joker use button
 local function create_use_button(card, args)
   return UIBox {
     definition = {
@@ -71,7 +72,7 @@ G.FUNCS.funmode_use_draw = function(e)
 end
 
 SMODS.DrawStep {
-  key = 'my_button',
+  key = 'funmode_use_button',
   order = -30, -- before the Card is drawn
   func = function(card, layer)
     if card.children.funmode_use then
@@ -237,7 +238,7 @@ G.FUNCS.exit_overlay_menu = function(args)
 local drag_ref = Card.drag
 function Card:drag()
     if Funmode.using_whiplash then
-        Funmode.whiplash_card.ability.extra.card = self
+        Funmode.whiplash_card.ability.funmode_extra.card = self
         Funmode.whiplash_card = nil
         G.FUNCS.exit_overlay_menu()
     else
@@ -275,6 +276,7 @@ function Card:drag()
 G.FUNCS.exit_draedon_ui = function()
     G.FUNCS:exit_overlay_menu()
     Funmode.using_draedon = nil
+    save_run()
     end
 
 G.FUNCS.funmode_draedon_init = function(card)
@@ -297,3 +299,223 @@ function get_new_boss()
         end
     return boss
     end
+
+-- Morshu
+
+--local function create_haggle_button(card)
+--  return UIBox {
+--    definition = {
+--      n = G.UIT.ROOT,
+--      config = {
+--        colour = G.C.CLEAR
+--      },
+--      nodes = {
+--        {
+--          n = G.UIT.C,
+--          config = {
+--            align = 'cm',
+--            padding = 0.15,
+--            r = 0.08,
+--            hover = true,
+--            shadow = true,
+--            colour = G.C.MULT, -- color of the button background
+--            button = 'funmode_haggle_press',
+--            func = 'funmode_haggle_draw',
+--            ref_table = card,
+--          },
+--          nodes = {
+--            {
+--              n = G.UIT.R,
+--              nodes = {
+--                {
+--                  n = G.UIT.T,
+--                  config = {
+--                    text = 'haggle',
+--                    colour = G.C.UI.TEXT_LIGHT, -- color of the button text
+--                    scale = 0.4
+--                  }
+--                },
+--                {
+--                  n = G.UIT.B,
+--                  config = {
+--                    w = 0.1,
+--                    h = 0.4
+--                  }
+--                }
+--              }
+--            }
+--          }
+--        }
+--      }
+--    },
+--    config = {
+--      align = 'tr',
+--      major = card,
+--      parent = card,
+--      offset = {x = -0.35, y = 0.725}
+--    }
+--  }
+--end
+--
+--G.FUNCS.funmode_haggle_press = function(e)
+--  local card = e.config.ref_table -- access the card this button was on
+--  local new_cost = card.sell_cost * (0.75 + pseudorandom('funmode_haggle')/2)
+--  if new_cost < card.sell_cost then
+--     card.sell_cost = floor(new_cost)
+--  else
+--     card.sell_cost = ceil(new_cost)
+--     end
+--  SMODS.calculate_effect({message = card.sell_cost .. '$'}, card)
+--  card.ability.funmode_haggled = true
+--end
+--
+--G.FUNCS.funmode_haggle_draw = function(e)
+--  local card = e.config.ref_table -- access the card this button was on (unused here, but you can access it)
+--  local can_use = not card.ability.funmode_haggled
+--
+--  -- Removes the button when the card can't be used, otherwise makes it use the previously defined button click
+--  e.config.button = can_use and 'funmode_haggle_press' or nil
+--  -- Changes the color of the button depending on whether it can be used or not
+--  e.config.colour = can_use and G.C.MULT or G.C.UI.BACKGROUND_INACTIVE
+--
+--end
+--
+--SMODS.DrawStep {
+--  key = 'my_button',
+--  order = -30, -- before the Card is drawn
+--  func = function(card, layer)
+--    if card.children.funmode_haggle then
+--      card.children.funmode_haggle:draw()
+--    end
+--  end
+--}
+--
+---- make sure SMODS doesn't draw the button after the card is drawn
+--SMODS.draw_ignore_keys.funmode_haggle = true
+--local highlight_ref = Card.highlight
+--function Card.highlight(self, is_higlighted)
+--  Funmode.debug = (self.area == G.shop_jokers or self.area == G.shop_vouchers or self.area == G.shop_booster)
+--  if
+--  -- not self.highlighted and
+--  -- (self.area == G.shop_jokers or self.area == G.shop_vouchers or self.area == G.shop_booster)
+--  (self.area == G.jokers) ------------------
+--  -- and #SMODS.find_card("j_funmode_morshu", true) ~= 0 then
+--  then
+--    self.children.funmode_haggle = create_haggle_button(self)
+--    --G.shop_jokers.cards[1].children.funmode_haggle = haggle_gl(G.shop_jokers.cards[1])
+--  elseif self.children.funmode_haggle then
+--    self.children.funmode_haggle:remove()
+--    self.children.funmode_haggle = nil
+--    end
+--  return highlight_ref(self, is_higlighted)
+--end
+
+
+
+
+
+
+-- haggle
+local function create_haggle_button(card)
+  return UIBox {
+    definition = {
+      n = G.UIT.ROOT,
+      config = {
+        colour = G.C.CLEAR
+      },
+      nodes = {
+        {
+          n = G.UIT.C,
+          config = {
+            align = 'cm',
+            padding = 0.15,
+            r = 0.08,
+            hover = true,
+            shadow = true,
+            colour = G.C.MULT, -- color of the button background
+            button = 'funmode_haggle_press',
+            func = 'funmode_haggle_draw',
+            ref_table = card,
+          },
+          nodes = {
+            {
+              n = G.UIT.R,
+              nodes = {
+                {
+                  n = G.UIT.T,
+                  config = {
+                    text = 'haggle',
+                    colour = G.C.UI.TEXT_LIGHT, -- color of the button text
+                    scale = 0.4
+                  }
+                },
+                {
+                  n = G.UIT.B,
+                  config = {
+                    w = 0.1,
+                    h = 0.4
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    config = {
+      align = 'bm',
+      major = card,
+      parent = card,
+      offset = {x = 0.0, y = 0.5}
+    }
+  }
+end
+
+G.FUNCS.funmode_haggle_press = function(e)
+  local card = e.config.ref_table -- access the card this button was on
+  if card.set_cost then
+    local new_cost = card.base_cost * (0.75 + pseudorandom('funmode_haggle')/2)
+    if new_cost < card.base_cost then
+        card.base_cost = math.floor(new_cost)
+    else
+        card.base_cost = math.ceil(new_cost)
+        end
+    SMODS.calculate_effect({message = '$' .. card.base_cost}, card)
+    card.ability.funmode_haggled = true
+    card:set_cost()
+    end
+end
+
+G.FUNCS.funmode_haggle_draw = function(e)
+  local card = e.config.ref_table -- access the card this button was on (unused here, but you can access it)
+  local can_use = not card.ability.funmode_haggled
+
+  -- Removes the button when the card can't be used, otherwise makes it use the previously defined button click
+  e.config.button = can_use and 'funmode_haggle_press' or nil
+  -- Changes the color of the button depending on whether it can be used or not
+  e.config.colour = can_use and G.C.MULT or G.C.UI.BACKGROUND_INACTIVE
+
+end
+
+SMODS.DrawStep {
+  key = 'funmode_haggle_button',
+  order = -30, -- before the Card is drawn
+  func = function(card, layer)
+    if card.children.funmode_haggle then
+      card.children.funmode_haggle:draw()
+    end
+  end
+}
+
+-- make sure SMODS doesn't draw the button after the card is drawn
+SMODS.draw_ignore_keys.funmode_haggle = true
+local highlight_ref = Card.highlight
+function Card.highlight(self, is_higlighted)
+  if not self.highlighted and (self.area == G.shop_jokers or self.area == G.shop_vouchers or self.area == G.shop_booster) and #SMODS.find_card("j_funmode_morshu", true) ~= 0 then
+    self.children.funmode_haggle = create_haggle_button(self)
+  elseif self.children.funmode_haggle then
+    self.children.funmode_haggle:remove()
+    self.children.funmode_haggle = nil
+    end
+  return highlight_ref(self, is_higlighted)
+end
